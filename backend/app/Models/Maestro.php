@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Administrador extends Model
+class Maestro extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'usuario',
+        'rfc',
         'nombre',
         'apellido',
-        'contrasena',
+        'estado',
     ];
 }

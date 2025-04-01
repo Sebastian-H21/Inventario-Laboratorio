@@ -4,14 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Administrador extends Model
+class Estudiantes extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'usuario',
+        'numero_control',
         'nombre',
         'apellido',
-        'contrasena',
+        'carrera',
+        'semestre',
+        'estado',
+        'imagen',
     ];
 }
