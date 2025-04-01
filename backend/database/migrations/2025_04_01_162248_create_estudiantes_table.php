@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('administradors', function (Blueprint $table) {
+        Schema::create('estudiantes', function (Blueprint $table) {
             $table-> engine = 'innoDB';
-            $table->string('usuario', 13)->primary();
+            $table->id(); 
+            $table->string('numero_Control', 12)->unique(); 
             $table->string('nombre', 30);
             $table->string('apellido', 50);
-            $table->string('contrasena', 60); 
+            $table->string('carrera', 30);
+            $table->string('semestre', 30);
+            $table->string('estado', 9);
+            $table->string('imagen')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('administradors');
+        Schema::dropIfExists('estudiantes');
     }
 };
