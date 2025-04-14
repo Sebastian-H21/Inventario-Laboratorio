@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('encargados', function (Blueprint $table) {
             $table-> engine = 'innoDB';
-            $table->string('usuario', 13)->primary();
+            $table->id();
+            $table->string('usuario', 13)->unique();
             $table->string('nombre', 30);
             $table->string('apellido', 50);
             $table->string('contrasena', 60); ;
