@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('apellido', 50);
             $table->string('carrera', 30);
             $table->string('semestre', 30);
-            $table->string('estado', 9);
             $table->string('imagen')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

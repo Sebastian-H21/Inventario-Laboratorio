@@ -17,13 +17,14 @@ return new class extends Migration
             $table->datetime('fecha_prestamo');
             $table->datetime('fecha_devolucion');
             $table->unsignedBigInteger('id_estudiante');
-            $table->string('rfc');
+            $table->string('id_maestro');
             $table->unsignedBigInteger('id_material');
             $table->string('estado', 11); //se refiere al estado del prestamo completo, incompleto, en proceso
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('id_estudiante')->references('id')->on('estudiantes');
-            $table->foreign('rfc')->references('rfc')->on('maestros');
+            $table->foreign('id_maestro')->references('rfc')->on('maestros');
             $table->foreign('id_material')->references('id')->on('materials');
 
         });

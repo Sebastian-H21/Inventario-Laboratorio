@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+
 return new class extends Migration
 {
     /**
@@ -13,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('maestros', function (Blueprint $table) {
             $table-> engine = 'innoDB';
-            $table->string('rfc', 13)->primary();
+            $table->id();  
+            $table->string('rfc', 13)->unique();
             $table->string('nombre', 30);
             $table->string('apellido', 50);
-            $table->string('estado', 9); ;
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

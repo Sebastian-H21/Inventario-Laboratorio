@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('marca', 50);
             $table->string('categoria', 30);
             $table->string('ubicacion', 30);
-            $table->string('estado', 9);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

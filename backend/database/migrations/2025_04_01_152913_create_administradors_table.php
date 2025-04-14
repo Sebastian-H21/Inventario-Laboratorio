@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('apellido', 50);
             $table->string('contrasena', 60); 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
