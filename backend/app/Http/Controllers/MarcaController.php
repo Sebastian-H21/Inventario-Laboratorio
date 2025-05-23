@@ -2,24 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ubicacion;
+use App\Models\Marca;
 use Illuminate\Http\Request;
 
-class UbicacionController extends Controller
+
+class MarcaController extends Controller
 {
+
     public function index(Request $request)
     {
         try {
             $verArchivados = $request->query('verArchivados') === 'true';
             if ($verArchivados) {
-                $ubicaciones = Ubicacion::onlyTrashed()->get(); 
+                $marcas = Marca::onlyTrashed()->get(); 
             } else {
-                $ubicaciones = Ubicacion::all(); 
+                $marcas = Marca::all(); 
             }
-            return response()->json($ubicaciones);
+            return response()->json($marcas);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Ocurrió un error al obtener las ubicaiones.',
+                'error' => 'Ocurrió un error al obtener las marcas.',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -33,7 +35,7 @@ class UbicacionController extends Controller
                 'nombre' => 'required|string|max:50',
                 ]);
                 
-                $registro = Ubicacion::create($validatedDatos);
+                $registro = Marca::create($validatedDatos);
                 
                 return response()->json([
                     'message' => 'Registro guardado correctamente',
@@ -60,11 +62,11 @@ class UbicacionController extends Controller
                 'nombre' => 'required|string|max:50',
                     
             ]);
-            $ubicacion = Ubicacion::findOrFail($id);
-            $ubicacion->update($validatedData);
+            $marca = Marca::findOrFail($id);
+            $marca->update($validatedData);
             return response()->json([
-                'message' => 'Ubicacion actualizado correctamente',
-                'data' => $ubicacion
+                'message' => 'Marca actualizado correctamente',
+                'data' => $marca
                 ], 200);
             } catch (\Illuminate\Validation\ValidationException $e) {
                 return response()->json([
@@ -79,14 +81,14 @@ class UbicacionController extends Controller
             }
     }
 
-    public function destroy(Ubicacion $ubicacion)
+    public function destroy(Marca $marca)
     {
         try {
-            $ubicacion->delete();
-            return response()->json(['message' => 'Ubicacion archivado correctamente.'], 200);
+            $marca->delete();
+            return response()->json(['message' => 'Marca archivado correctamente.'], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Ocurrió un error al archivar la ubicacion.',
+                'error' => 'Ocurrió un error al archivar la marca.',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -94,31 +96,31 @@ class UbicacionController extends Controller
     public function restaurar($id)
     {
         try {
-            $ubicacion = Ubicacion::onlyTrashed()->findOrFail($id);
-            $ubicacion->restore();
-            return response()->json(['message' => 'Ubicacion restaurada'], 200); 
+            $marca = Marca::onlyTrashed()->findOrFail($id);
+            $marca->restore();
+            return response()->json(['message' => 'Marca restaurada'], 200); 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'Ubicacion no encontrada.',
+                'error' => 'Marca no encontrada.',
                 'message' => $e->getMessage(),
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Ocurrió un error al restaurar la ubicacion.',
+                'error' => 'Ocurrió un error al restaurar la marca.',
                 'message' => $e->getMessage(),
             ], 500);
         }
     }
 
-    //listar ubicaciones
+    //listar marcas
     public function list()
     {
         try {
-            $ubicaciones = Ubicacion::select('nombre',)->get();
-            return response()->json($ubicaciones);
+            $marcas = Marca::select('nombre',)->get();
+            return response()->json($marcas);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al obtener las ubicaciones.',
+                'error' => 'Error al obtener las marcas.',
                 'message' => $e->getMessage()
             ], 500);
         }
