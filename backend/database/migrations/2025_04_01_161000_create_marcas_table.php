@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('encargados', function (Blueprint $table) {
-            $table-> engine = 'innoDB';
+        Schema::create('marcas', function (Blueprint $table) {
             $table->id();
-            $table->string('email', 30)->unique();
-            $table->string('nombre', 30);
-            $table->string('apellido', 50);
-            $table->string('password', 60); ;
-            $table->boolean('is_admin')->default(false);
+            $table->string('nombre', 50);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('encargados');
+        Schema::dropIfExists('marcas');
     }
 };

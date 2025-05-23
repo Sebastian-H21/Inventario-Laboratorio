@@ -17,9 +17,11 @@ return new class extends Migration
             $table->string('codigo', 10)->unique(); 
             $table->string('nombre', 30);
             $table->integer('cantidad');
-            $table->string('marca', 50);
-            $table->string('categoria', 30);
-            $table->string('ubicacion', 30);
+
+            $table->foreignId('id_marca')->constrained('marcas');
+            $table->foreignId('id_categoria')->constrained('categorias');
+            $table->foreignId('id_ubicacion')->constrained('ubicacions');
+
             $table->timestamps();
             $table->softDeletes();
         });
