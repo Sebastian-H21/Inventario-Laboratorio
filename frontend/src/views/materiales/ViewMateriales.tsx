@@ -1,14 +1,168 @@
+import React, { useState } from "react";
+import Table from "../../components/Table";
+import ModalForm from "../../components/Ventana";
+import Sidebar from "../../components/Sidebar";
+import { ColumnDef } from "@tanstack/react-table";
+import { Material } from "../../types";
 
-import Sidebar from '../../components/Sidebar'
-const ViewMateriales = () =>{
+
+import useFetchMateriales from "./hooks/useFetchMateriales";
+import { useMaterialesHandlers } from "./hooks/useMaterialesHandlers";
+
+const ViewMateriales: React.FC = () => {
+    const [verArchivados, setVerArchivados] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
+
+    const { data, setData, loading } = useFetchMateriales(verArchivados);
+
+    const {
+    handleEdit,
+    handleDelete,
+    handleRestore,
+    handleSubmit,
+    marcas,
+    categorias,
+    ubicaciones,
+    } = useMaterialesHandlers({
+        data,
+        setData,
+        setIsModalOpen,
+        setEditingMaterial,
+        editingMaterial,
+    });
+
+    const columns: ColumnDef<Material>[] = [
+        { accessorKey: "id", header: "ID" },
+        { accessorKey: "codigo", header: "Código" },
+        { accessorKey: "nombre", header: "Nombre" },
+        { accessorKey: "cantidad", header: "Cantidad" },
+        {
+        header: "Marca",
+        accessorFn: (row) => row.marca?.nombre || "Sin marca"
+        },
+        {
+        header: "Categoría",
+        accessorFn: (row) => row.categoria?.nombre || "Sin categoría"
+        },
+        {
+        header: "Ubicación",
+        accessorFn: (row) => row.ubicacion?.nombre || "Sin ubicación"
+        },
+        {
+            header: "Acciones",
+            cell: ({ row }) => {
+                const material = row.original;
+                return verArchivados ? (
+                <button
+                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                    onClick={() => handleRestore(material.id)}
+                >
+                    Restaurar
+                </button>
+                ):(
+                <div className="flex gap-2">
+                    <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                        onClick={() => handleEdit(material)}
+                    >
+                        Editar
+                    </button>
+                    <button
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                        onClick={() => handleDelete(material.id)}
+                    >
+                        Archivar
+                    </button>
+                </div>
+                );
+            }
+        }
+    ];
+
+    const fields = [
+        { name: "codigo", label: "Código", type: "text", placeholder: "Ingrese el codigo", minLength: 10, maxLength: 10,required: true, pattern: "^[0-9]{10}$"},
+        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del material",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
+        { name: "cantidad", label: "Cantidad", type: "number", placeholder: "Ingrese la cantidad",required: true,min: 1, max: 200 },
+        {name: "id_marca",label: "Marca",type: "select",required: true,
+            options: marcas.map(m => ({
+                value: m.id,
+                label: `${m.id} (${m.nombre})`
+                })),
+        },
+
+        {name: "id_categoria",label: "Categoría",type: "select",required: true,
+            options: categorias.map(c => ({
+                value: c.id,
+                label: `${c.id} (${c.nombre})`
+                }))
+        },
+        {name: "id_ubicacion",label: "Ubicacion",type: "select",required: true,
+            options: ubicaciones.map(u => ({
+                value: u.id,
+                label: `${u.id} (${u.nombre})`
+                }))
+        },
+    ]
+
+
+    if (loading) {
+        return (
+        <div className="text-center">
+            <div role="status">
+            <svg className="inline w-8 h-8 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101">
+                <path d="M100 50.6C100 78.2 77.6 100.6 50 100.6S0 78.2 0 50.6C0 23 22.4 0.6 50 0.6S100 23 100 50.6Z" fill="currentColor" />
+                <path d="M94 39c2.4-.6 3.9-3.1 3-5.5a47 47 0 0 0-8.2-15.2A49.9 49.9 0 0 0 75.2 7.4a48.5 48.5 0 0 0-18.4-6.4c-5-.7-10.1-.6-15 
+                        .2-2.5.4-4 2.9-3.4 5.3.6 2.4 3.1 4 5.5 3.7a41.3 41.3 0 0 1 21.6 4.6 41.2 41.2 0 0 1 17.1 18.4c.9 2.3 3.4 3.6 5.9 3Z" fill="currentFill" />
+            </svg>
+            <span className="sr-only">Cargando...</span>
+            </div>
+        </div>
+        );
+    }
 
     return (
-    
-        <>    
-        <Sidebar/>        
-        </>
-    
-    
+        <div className="flex bg-white dark:bg-gray-800">
+        <Sidebar />
+        <div className="p-4 flex-1">
+            <div className="flex justify-between items-center mb-4">
+            <button
+                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
+                onClick={() => setVerArchivados(!verArchivados)}
+            >
+                {verArchivados ? "Ver Activos" : "Ver Archivados"}
+            </button>
+            <h1 className="flex-1 text-center font-bold text-3xl text-black dark:text-white">
+                Materiales
+            </h1>
+            </div>
+
+            <Table
+            data={data}
+            columns={columns}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onRestore={handleRestore}
+            showArchived={verArchivados}
+            onAdd={() => {
+                setEditingMaterial(null);
+                setIsModalOpen(true);
+            }}
+            />
+
+            {verArchivados && data.length === 0 && (
+            <p className="text-center text-gray-500 mt-4">No hay materiales archivados.</p>
+            )}
+
+            <ModalForm
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSubmit={handleSubmit}
+            initialData={editingMaterial}
+            fields={fields}
+            />
+        </div>
+        </div>
     );
-    }
-    export default ViewMateriales;
+};
+export default ViewMateriales;
