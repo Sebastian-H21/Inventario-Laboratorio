@@ -11,11 +11,16 @@ class Maestro extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
+    
     protected $fillable = [
         'rfc',
         'nombre',
         'apellido',
         
     ];
+
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'id_maestro');
+    }
 }

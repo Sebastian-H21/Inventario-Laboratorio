@@ -15,8 +15,29 @@ class Material extends Model
         'codigo',
         'nombre',
         'cantidad',
-        'marca',
-        'categoria',
-        'ubicacion',
+        'id_marca',
+        'id_categoria',
+        'id_ubicacion',
     ];
+
+
+    public function prestamos()
+    {
+        return $this->belongsToMany(Prestamo::class, 'detalle_prestamos', 'material_id', 'prestamo_id')->withTrashed();
+    }
+    
+    public function marca()
+    {
+        return $this->belongsTo(Marca::class, 'id_marca')->withTrashed();
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria')->withTrashed();
+    }
+    public function ubicacion()
+    {
+        return $this->belongsTo(Ubicacion::class, 'id_ubicacion')->withTrashed();
+    }
+
 }
