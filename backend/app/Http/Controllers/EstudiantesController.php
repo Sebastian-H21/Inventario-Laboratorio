@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class EstudiantesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(Request $request)
     {
         try {
@@ -27,18 +25,6 @@ class EstudiantesController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -48,7 +34,6 @@ class EstudiantesController extends Controller
                 'apellido' => 'required|string|max:50',  
                 'carrera' => 'required|string|max:50',
                 'semestre' => 'required|string|max:50',
-                'imagen' => 'required|string|max:50',     
                 ]);
                 
                 $registro = Estudiantes::create($validatedDatos);
@@ -70,25 +55,6 @@ class EstudiantesController extends Controller
             }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Estudiantes $estudiantes)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Estudiantes $estudiantes)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -98,7 +64,6 @@ class EstudiantesController extends Controller
                 'apellido' => 'required|string|max:50',  
                 'carrera' => 'required|string|max:50',
                 'semestre' => 'required|string|max:50',
-                'imagen' => 'required|string|max:50',  
             ]);
         
             $estudiante = Estudiantes::findOrFail($id);
@@ -120,10 +85,6 @@ class EstudiantesController extends Controller
                 ], 500);
             }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Estudiantes $estudiante)
     {
         try {
@@ -156,4 +117,18 @@ class EstudiantesController extends Controller
             ], 500);
         }
     }
+
+    public function list()
+    {
+        try {
+            $estudiantes = Estudiantes::select('id','numero_control', 'nombre', 'apellido','carrera','semestre')->get(); // sin `onlyTrashed`
+            return response()->json($estudiantes);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Ocurrió un error al obtener los estudiantes.',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
 }

@@ -17,6 +17,10 @@ class Estudiantes extends Model
         'apellido',
         'carrera',
         'semestre',
-        'imagen',
     ];
+
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'id_estudiante');
+    }
 }
