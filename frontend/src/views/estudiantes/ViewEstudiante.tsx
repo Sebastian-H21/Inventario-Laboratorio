@@ -34,6 +34,7 @@ const ViewEstudiantes: React.FC = () => {
         { accessorKey: "apellido", header: "Apellidos" },
         { accessorKey: "carrera", header: "Carrera" },
         { accessorKey: "semestre", header: "Semestre" },
+        { accessorKey: "modalidad", header: "Modalidad" },
         {
             header: "Acciones",
             cell: ({ row }) => {
@@ -94,6 +95,11 @@ const ViewEstudiantes: React.FC = () => {
             { value: "10", label: "10mo Semestre" },
             { value: "11", label: "11vo Semestre" },
             { value: "12", label: "12vo Semestre" },
+        ],required: true },
+        { name: "modalidad", label: "Modalidad", type: "select",options: [
+            { value: "Escolarizada", label: "Escolarizada" },
+            { value: "Mixta", label: "Mixta" },
+            { value: "Otra", label: "Otra" },
         ],required: true },
     ];
 

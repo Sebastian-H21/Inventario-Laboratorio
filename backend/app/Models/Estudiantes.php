@@ -17,6 +17,7 @@ class Estudiantes extends Model
         'apellido',
         'carrera',
         'semestre',
+        'modalidad',
     ];
 
     public function prestamos()

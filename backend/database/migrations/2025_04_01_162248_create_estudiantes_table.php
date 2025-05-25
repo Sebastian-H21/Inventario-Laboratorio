@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('apellido', 50);
             $table->string('carrera', 30);
             $table->string('semestre', 30);
-
+            $table->string('modalidad', 12);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -34,6 +34,7 @@ class EstudiantesController extends Controller
                 'apellido' => 'required|string|max:50',  
                 'carrera' => 'required|string|max:50',
                 'semestre' => 'required|string|max:50',
+                'modalidad' => 'required|string|max:12',
                 ]);
                 
                 $registro = Estudiantes::create($validatedDatos);
@@ -64,6 +65,7 @@ class EstudiantesController extends Controller
                 'apellido' => 'required|string|max:50',  
                 'carrera' => 'required|string|max:50',
                 'semestre' => 'required|string|max:50',
+                'modalidad' => 'required|string|max:12',
             ]);
         
             $estudiante = Estudiantes::findOrFail($id);
