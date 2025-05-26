@@ -47,6 +47,7 @@ interface Params {
     const handleEdit = (material: Material) => {
         setEditingMaterial({
         ...material,
+        observaciones: material.observaciones === "Sin observaciones" ? "" : material.observaciones,
         marca: marcas.find((m: any) => m.id === material.id_marca),
         categoria: categorias.find((c: any) => c.id === material.id_categoria),
         ubicacion: ubicaciones.find((u: any) => u.id === material.id_ubicacion),
@@ -90,6 +91,10 @@ interface Params {
 
     const handleSubmit = async (material: Material) => {
         try {
+    
+        if (!material.observaciones || material.observaciones.trim() === "") {
+            material.observaciones = "Sin observaciones";
+        }
         const isEdit = !!editingMaterial;
         const codigoDuplicado = data.some(
             (item) =>

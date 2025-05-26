@@ -38,10 +38,13 @@ class MaterialController extends Controller
                 'codigo' => 'required|string|min:10|max:10',
                 'nombre' => 'required|string|max:30',
                 'cantidad' => 'required|numeric',
+                'observaciones' => 'nullable|string|max:50',
                 'id_marca' => 'required|exists:marcas,id',
                 'id_categoria' => 'required|exists:categorias,id',
                 'id_ubicacion' => 'required|exists:ubicacions,id',
             ]);
+
+            $validatedData['observaciones'] = $validatedData['observaciones'] ?? 'Sin observaciones';
             $registro = Material::create($validatedData);
             $registro->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre');
             return response()->json([
@@ -69,11 +72,13 @@ class MaterialController extends Controller
                 'codigo' => 'required|string|min:10|max:10',
                 'nombre' => 'required|string|max:30',
                 'cantidad' => 'required|numeric',
+                'observaciones' => 'nullable|string|max:50',
                 'id_marca' => 'required|exists:marcas,id',
                 'id_categoria' => 'required|exists:categorias,id',
                 'id_ubicacion' => 'required|exists:ubicacions,id',
             ]);
-
+            
+            $validatedData['observaciones'] = $validatedData['observaciones'] ?? 'Sin observaciones';
             $material = Material::findOrFail($id);
             $material->update($validatedData);
 

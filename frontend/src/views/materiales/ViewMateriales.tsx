@@ -49,6 +49,7 @@ const ViewMateriales: React.FC = () => {
         header: "Ubicación",
         accessorFn: (row) => row.ubicacion?.nombre || "Sin ubicación"
         },
+        { accessorKey: "observaciones", header: "Comentarios" },
         {
             header: "Acciones",
             cell: ({ row }) => {
@@ -84,6 +85,7 @@ const ViewMateriales: React.FC = () => {
         { name: "codigo", label: "Código", type: "text", placeholder: "Ingrese el codigo", minLength: 10, maxLength: 10,required: true, pattern: "^[0-9]{10}$"},
         { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del material",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
         { name: "cantidad", label: "Cantidad", type: "number", placeholder: "Ingrese la cantidad",required: true,min: 1, max: 200 },
+        { name: "observaciones", label: "Comentarios", type: "text", placeholder: "Comentario (opcional)",maxLength: 50,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
         {name: "id_marca",label: "Marca",type: "select",required: true,
             options: marcas.map(m => ({
                 value: m.id,

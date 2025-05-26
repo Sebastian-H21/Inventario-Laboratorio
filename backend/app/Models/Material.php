@@ -15,9 +15,11 @@ class Material extends Model
         'codigo',
         'nombre',
         'cantidad',
+        'observaciones',
         'id_marca',
         'id_categoria',
         'id_ubicacion',
+
     ];
 
 
