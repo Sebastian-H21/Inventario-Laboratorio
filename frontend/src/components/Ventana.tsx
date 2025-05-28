@@ -43,7 +43,7 @@ interface ModalFormProps {
     };
 
     const [materialCodigo, setMaterialCodigo] = useState("");
-    const [materialesSeleccionados, setMaterialesSeleccionados] = useState<string[]>(initialData?.materiales || []);
+    const [materialesSeleccionados, setMaterialesSeleccionados] = useState<string[]>( []);
     const handleAgregarMaterial = () => {
         const codigo = materialCodigo.trim();
         if (!codigo) return;
@@ -100,8 +100,7 @@ interface ModalFormProps {
             try {
             const response = await api.get("/materials");
             const data = response.data;
-            const codigos = data.map((mat: any) => mat.codigo);
-            setMaterialesDisponiblesData(codigos);
+            
             setMaterialesDisponiblesData(data); 
             } catch (error) {
             console.error("Error al obtener materiales:", error);
@@ -113,7 +112,6 @@ interface ModalFormProps {
     useEffect(() => {
         setMaterialesSeleccionados(initialData?.materiales || []);
     }, [initialData]);
-
 if (!isOpen) return null;
 
 return (
@@ -123,7 +121,12 @@ return (
                 {initialData ? "Editar" : "Nuevo"} Registro
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-            {fields.map((field) => (
+                {fields
+                .filter((field) => {
+                    if (field.name === "fecha_devolucion" && initialData) return false;
+                    return true;
+                })
+                .map((field) => (
                 <div key={field.name} className="mb-4">
                     <label className="block text-sm font-medium mb-1">
                     {field.label}
@@ -135,7 +138,12 @@ return (
                             type="text"
                             value={materialCodigo}
                             onChange={(e) => setMaterialCodigo(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAgregarMaterial())}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleAgregarMaterial();
+                                }
+                            }}
                             placeholder={field.placeholder}
                             className="w-full p-2 border rounded-md"
                         />
@@ -154,7 +162,7 @@ return (
                             Limpiar
                         </button>
                         </div>
-                            <ul className="mt-2 pl-4 list-disc">
+                            <ul className="mt-2 pl-4 list-disc max-h-32 overflow-y-auto border rounded p-2">
                             {materialesSeleccionados.map((codigo) => {
                                 const material = materialesDisponiblesData.find(m => m.codigo === codigo);
                                 return (
