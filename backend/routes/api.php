@@ -10,6 +10,7 @@ use App\Http\Controllers\AdministradorController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\UbicacionController;
+use App\Http\Controllers\MateriaController;
 
 // Login único
 Route::post('/login', [EncargadoController::class, 'login']);
@@ -44,6 +45,9 @@ Route::middleware('auth:encargado')->group(function () {
 
     Route::apiResource('ubicacions', UbicacionController::class);
     Route::post('/ubicacions/{id}/restaurar', [UbicacionController::class, 'restaurar']);
+
+    Route::apiResource('materias', MateriaController::class);
+    Route::post('/materias/{id}/restaurar', [MateriaController::class, 'restaurar']);
 });
 
 // Rutas exclusivas para administradores
