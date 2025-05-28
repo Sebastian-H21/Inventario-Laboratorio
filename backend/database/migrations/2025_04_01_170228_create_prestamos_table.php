@@ -16,19 +16,18 @@ return new class extends Migration
             $table->id();
             $table->datetime('fecha_prestamo');
             $table->datetime('fecha_devolucion');
-            $table->unsignedBigInteger('id_estudiante');
-            $table->string('id_maestro');
-            $table->unsignedBigInteger('id_material');
-            $table->string('estado', 11); //se refiere al estado del prestamo completo, incompleto, en proceso
-            $table->timestamps();
+            $table->string('practica', 50);
+
+            $table->foreignId('id_estudiante')->constrained('estudiantes');
+            $table->foreignId('id_maestro')->constrained('maestros');
+            $table->foreignId('id_encargado')->constrained('encargados');
+            $table->foreignId('id_materia')->constrained('materias');
+            
             $table->softDeletes();
-
-            $table->foreign('id_estudiante')->references('id')->on('estudiantes');
-            $table->foreign('id_maestro')->references('rfc')->on('maestros');
-            $table->foreign('id_material')->references('id')->on('materials');
-
+            $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.
