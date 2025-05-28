@@ -39,7 +39,7 @@ const ViewCategorias: React.FC = () => {
             const categoria = row.original;
             return verArchivados ? (
             <button
-                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
+                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
                 onClick={() => handleRestore(categoria.id)}
             >
                 Restaurar
@@ -47,13 +47,13 @@ const ViewCategorias: React.FC = () => {
             ) : (
             <div className="flex gap-2">
                 <button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
                 onClick={() => handleEdit(categoria)}
                 >
                 Editar
                 </button>
                 <button
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md cursor-pointer"
                 onClick={() => handleDelete(categoria.id)}
                 >
                 Archivar
@@ -90,7 +90,7 @@ const ViewCategorias: React.FC = () => {
             <div className="p-4 flex-1">
                 <div className="flex justify-between items-center mb-4">
                 <button
-                    className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
+                    className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
                     onClick={() => setVerArchivados(!verArchivados)}
                 >
                     {verArchivados ? "Ver Activos" : "Ver Archivados"}

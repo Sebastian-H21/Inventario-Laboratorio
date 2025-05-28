@@ -100,7 +100,7 @@ const ViewEncargados: React.FC = () => {
         <div className="p-4 flex-1">
             <div className="flex justify-between items-center mb-4">
             <button
-                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
+                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
                 onClick={() => setVerArchivados(!verArchivados)}
             >
                 {verArchivados ? "Ver Activos" : "Ver Archivados"}
@@ -139,9 +139,3 @@ const ViewEncargados: React.FC = () => {
     );
 };
 export default ViewEncargados;
-
-//La Contraseña requiere
-//Una letra minúscula
-//Una letra mayúscula
-//Un dígito
-//Un total de al menos 8 caracteres
