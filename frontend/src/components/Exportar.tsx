@@ -71,7 +71,7 @@ export const ModalExportar: React.FC<ModalExportarProps> = ({
                             onChange={(date) => setFechaInicio(date)}
                             className="w-full border rounded px-2 py-1"
                             dateFormat="yyyy-MM-dd"
-                            minDate={new Date(2025, 4, 1)} // 1 de mayo
+                            minDate={new Date(2025, 4, 1)} 
                         />
                     </div>
 
