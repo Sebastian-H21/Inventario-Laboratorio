@@ -36,6 +36,7 @@ const Sidebar = () => {
         ? [{ title: "Encargados", src: "user", path: "/encargados" }]
         : [{ title: "Mi perfil", src: "user", path: "/perfil" }]
         ),
+        { title: "Materia", src: "materia", path: "/materias" },
         { title: "Marca", src: "marca", path: "/marcas", gap: true },
         { title: "categoria", src: "categoria", path: "/categorias" },
         { title: "ubicacion", src: "ubicacion", path: "/ubicacion" },

@@ -16,6 +16,8 @@ import ViewPerfil from "./views/perfil/ViewPerfil";
 import ViewMarcas from "./views/marcas/ViewMarcas";
 import ViewCategorias from "./views/categorias/ViewCategorias";
 import ViewUbicacion from "./views/ubicacion/ViewUbicacion";
+import ViewMaterias from "./views/materias/viewMaterias";
+
 
 const token = localStorage.getItem('token');
 if (token) {
@@ -47,6 +49,7 @@ const AnimatedRoutes = () => {
                     <Route path="/marcas" element={<RutasProtegidas><ViewMarcas /></RutasProtegidas>} />
                     <Route path="/categorias" element={<RutasProtegidas><ViewCategorias /></RutasProtegidas>} />
                     <Route path="/ubicacion" element={<RutasProtegidas><ViewUbicacion /></RutasProtegidas>} />
+                    <Route path="/materias" element={<RutasProtegidas><ViewMaterias /></RutasProtegidas>} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </motion.div>
