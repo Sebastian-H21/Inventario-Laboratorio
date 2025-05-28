@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import api from "../../../utils/api";
 import { toast } from "react-toastify";
 import { Dispatch, SetStateAction } from "react";
+import { exportToExcel, formatMaestrosForXLS } from "../../../utils/exportToExcel";
 
 interface Params {
     data: Maestro[];
@@ -85,5 +86,38 @@ interface Params {
         }
     };
 
-    return { handleEdit, handleDelete, handleRestore, handleSubmit };
+
+    const handleExportMaestros = async ({ tipo }: { tipo: "activos" | "completados" }) => {
+            try {
+                const response = await api.get("/maestros", {
+                    params: { verArchivados: tipo === "completados" },
+                });
+
+                const maestros = response.data;
+
+                if (maestros.length === 0) {
+                    toast.info("No se encontraron maestros para exportar.");
+                    return;
+                }
+
+                const dataFormateada = formatMaestrosForXLS(maestros);
+
+                const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+                const nombreArchivo = `maestros_${tipo === "completados" ? "archivados" : "activos"}_${formatDate(new Date())}.xlsx`;
+
+                exportToExcel(dataFormateada, nombreArchivo);
+                toast.success("Exportación realizada con éxito.");
+            } catch (error) {
+                console.error("Error al exportar maestros:", error);
+                toast.error("Ocurrió un error al exportar.");
+            }
+        };
+
+
+    return { handleEdit, 
+            handleDelete, 
+            handleRestore, 
+            handleSubmit,
+            handleExportMaestros
+        };
 };

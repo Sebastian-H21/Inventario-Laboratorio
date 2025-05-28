@@ -4,15 +4,15 @@ import ModalForm from "../../components/Ventana";
 import Sidebar from "../../components/Sidebar";
 import { ColumnDef } from "@tanstack/react-table";
 import { Maestro } from "../../types";
-
-
 import useFetchMaestros from "./hooks/useFetchMaestros";
 import { useMaestrosHandlers } from "./hooks/useMaestrosHandlers";
+import { ModalExportar } from "../../components/Exportar";
 
 const ViewMaestros: React.FC = () => {
     const [verArchivados, setVerArchivados] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingMaestro, setEditingMaestro] = useState<Maestro | null>(null);
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
     const { data, setData, loading } = useFetchMaestros(verArchivados);
 
@@ -20,7 +20,8 @@ const ViewMaestros: React.FC = () => {
         handleEdit,
         handleDelete,
         handleRestore,
-        handleSubmit
+        handleSubmit,
+        handleExportMaestros
     } = useMaestrosHandlers({
         data,
         setData,
@@ -40,7 +41,7 @@ const ViewMaestros: React.FC = () => {
             const maestro = row.original;
             return verArchivados ? (
             <button
-                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
+                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
                 onClick={() => handleRestore(maestro.id)}
             >
                 Restaurar
@@ -48,13 +49,13 @@ const ViewMaestros: React.FC = () => {
             ) : (
             <div className="flex gap-2">
                 <button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
                 onClick={() => handleEdit(maestro)}
                 >
                 Editar
                 </button>
                 <button
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md cursor-pointer"
                 onClick={() => handleDelete(maestro.id)}
                 >
                 Archivar
@@ -91,15 +92,23 @@ const ViewMaestros: React.FC = () => {
         <Sidebar />
         <div className="p-4 flex-1">
             <div className="flex justify-between items-center mb-4">
-            <button
-                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
-                onClick={() => setVerArchivados(!verArchivados)}
-            >
-                {verArchivados ? "Ver Activos" : "Ver Archivados"}
-            </button>
-            <h1 className="flex-1 text-center font-bold text-3xl text-black dark:text-white">
-                Maestros
-            </h1>
+                <div className="flex gap-2">
+                    <button
+                        className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
+                        onClick={() => setVerArchivados(!verArchivados)}
+                    >
+                        {verArchivados ? "Ver Estudiantes" : "Ver Archivados"}
+                    </button>
+                    <button
+                        onClick={() => setIsExportModalOpen(true)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
+                    >
+                        Exportar
+                    </button>
+                </div>
+                <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
+                        Estudiantes
+                </div>
             </div>
 
             <Table
@@ -126,6 +135,15 @@ const ViewMaestros: React.FC = () => {
             initialData={editingMaestro}
             fields={fields}
             />
+
+            <ModalExportar
+            key={isExportModalOpen ? "open" : "closed"} // Fuerza un rerender
+            isOpen={isExportModalOpen}
+            onClose={() => setIsExportModalOpen(false)}
+            onExport={handleExportMaestros}
+            mostrarFechas={false}
+            recurso="Maestros"
+            />                
         </div>
         </div>
     );
