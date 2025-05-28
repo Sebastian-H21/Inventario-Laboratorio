@@ -11,6 +11,7 @@ export interface Material {
     codigo: string;
     nombre: string;
     cantidad: number;
+    observaciones:string;
     id_marca: number;
     id_categoria: number;
     id_ubicacion: number;
@@ -38,6 +39,7 @@ export interface Estudiante {
     apellido: string;
     carrera: string;
     semestre: string;
+    modalidad:string;
 
 }
 
@@ -58,6 +60,10 @@ export interface Ubicacion {
     nombre: string;
 }
 
+export interface Materia {
+    id: number;
+    nombre: string;
+}
 
 
 
@@ -66,21 +72,26 @@ export interface Prestamo {
     id: number;
     fecha_prestamo: string;
     fecha_devolucion: string;
+    practica:string;
     id_estudiante: number;
     id_maestro: number;
     id_encargado?: number;
-
+    id_materia?: number;
+    deleted_at?: string | null;
+    
     
     materiales: string[]; 
 
     
     rfc: string;
     numero_control: string;
+    nombre:string;
 
     
     estudiante?: Estudiante;
     maestro?: Maestro;
     encargado?: Encargado;
+    materia?: Materia;
     
 
     materiales_detalle?: Array<{
