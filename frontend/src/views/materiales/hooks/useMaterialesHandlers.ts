@@ -5,6 +5,7 @@ import { Material,Marca, Categoria, Ubicacion  } from "../../../types";
 import { deleteMaterial, saveOrUpdateMaterial } from "../services/materialesServices";
 import api from "../../../utils/api";
 import { Dispatch, SetStateAction } from "react";
+import { exportToExcel, formatMaterialesForXLS } from '../../../utils/exportToExcel'
 
 interface Params {
     data: Material[];
@@ -120,6 +121,33 @@ interface Params {
         }
     };
 
+
+    const handleExportMateriales = async ({ tipo }: { tipo: "activos" | "completados" }) => {
+        try {
+            const response = await api.get("/materials", {
+                params: { verArchivados: tipo === "completados" },
+            });
+
+            const materiales = response.data;
+
+            if (materiales.length === 0) {
+                toast.info("No se encontraron materiales para exportar.");
+                return;
+            }
+
+            const dataFormateada = formatMaterialesForXLS(materiales);
+
+            const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+            const nombreArchivo = `materiales_${tipo === "completados" ? "archivados" : "activos"}_${formatDate(new Date())}.xlsx`;
+
+            exportToExcel(dataFormateada, nombreArchivo);
+            toast.success("Exportación realizada con éxito.");
+        } catch (error) {
+            console.error("Error al exportar materiales:", error);
+            toast.error("Ocurrió un error al exportar.");
+        }
+    };
+
     return {
         handleEdit,
         handleDelete,
@@ -128,5 +156,7 @@ interface Params {
         marcas,
         categorias,
         ubicaciones,
+        handleExportMateriales
+        
     };
 };
