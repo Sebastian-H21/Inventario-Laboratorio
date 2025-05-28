@@ -137,7 +137,7 @@ const ViewMaestros: React.FC = () => {
             />
 
             <ModalExportar
-            key={isExportModalOpen ? "open" : "closed"} // Fuerza un rerender
+            key={isExportModalOpen ? "open" : "closed"} 
             isOpen={isExportModalOpen}
             onClose={() => setIsExportModalOpen(false)}
             onExport={handleExportMaestros}
