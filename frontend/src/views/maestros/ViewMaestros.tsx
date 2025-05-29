@@ -97,7 +97,7 @@ const ViewMaestros: React.FC = () => {
                         className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
                         onClick={() => setVerArchivados(!verArchivados)}
                     >
-                        {verArchivados ? "Ver Estudiantes" : "Ver Archivados"}
+                        {verArchivados ? "Ver Maestros" : "Ver Archivados"}
                     </button>
                     <button
                         onClick={() => setIsExportModalOpen(true)}
@@ -107,7 +107,7 @@ const ViewMaestros: React.FC = () => {
                     </button>
                 </div>
                 <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                        Estudiantes
+                        Maestros
                 </div>
             </div>
 
