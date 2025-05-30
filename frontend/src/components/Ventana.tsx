@@ -18,6 +18,7 @@ interface ModalFormProps {
         options?: { value: string; label: string }[];
         min?: number; 
         max?: number;
+        title?: string;
         
     }[];
 }
@@ -209,6 +210,7 @@ return (
                         maxLength={field.maxLength}
                         pattern={field.pattern}
                         className="w-full p-2 border rounded-md"
+                        title={field.title}
                     />
                     ) : field.name === "numero_control" ? (
                     <div>
@@ -222,6 +224,7 @@ return (
                         placeholder={field.placeholder}
                         required={field.required}
                         className="w-full p-2 border rounded-md"
+                        title={field.title}
                         />
                         <datalist id="lista-estudiantes">
                         {estudiantes.map((est) => (
@@ -249,6 +252,7 @@ return (
                         min={field.min}
                         max={field.max}
                         className="w-full p-2 border rounded-md"
+                        title={field.title}
                     />
                     )}
                 </div>
