@@ -67,7 +67,8 @@ const ViewMaestros: React.FC = () => {
     ];
 
     const fields = [
-        { name: "rfc", label: "Rfc", type: "text", placeholder: "Ingrese el RFC", minLength: 13, maxLength: 13, required: true, pattern: "^[A-Z]{4}\\d{6}[A-Z0-9]{3}$" },
+        { name: "rfc", label: "Rfc", type: "text", placeholder: "Ingrese el RFC", minLength: 13, maxLength: 13, required: true, pattern: "^[A-Z]{4}\\d{6}[A-Z0-9]{3}$",
+            title: "Debe cumplir con el patrón de RFC" },
         { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del maestro", maxLength: 30, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
         { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos", maxLength: 50, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
     ];
