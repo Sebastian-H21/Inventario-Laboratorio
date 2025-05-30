@@ -75,7 +75,7 @@ const ViewEncargados: React.FC = () => {
     { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del encargado",minLength: 3,maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
     { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",minLength: 3,maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
     { name: "password", label: "Contraseña", type: "password", placeholder: "Ingrese la contraseña",minLength: 8,maxLength: 12,pattern:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
-        title: "Debe contener al menos 8 caracteres, una mayúscula y un número"  },
+        title: "Debe contener minimo 8 caracteres, al menos una minúscula, mayúscula y un número"  },
     { name: "is_admin", type: "hidden", value: false }
     ];
 

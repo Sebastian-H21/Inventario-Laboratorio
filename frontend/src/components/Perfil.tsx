@@ -100,7 +100,9 @@ const handleSubmit = async (updatedData: Record<string, any>) => {
         initialData={{ email: user.email }}
         fields={[
           {name: "email",label: "Correo electrónico",type: "email",placeholder: "ejemplo@correo.com",minLength: 5,maxLength: 100,required: true},
-          {name: "password", label: "Contraseña", type: "password", placeholder: "Ingrese la nueva contraseña o deja el campo vacio",minLength: 8,maxLength: 12,required: false,pattern:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$"},
+          {name: "password", label: "Contraseña", type: "password", placeholder: "Ingrese la nueva contraseña o deja el campo vacio",minLength: 8,maxLength: 12,required: false,pattern:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+            title: "Debe contener minimo 8 caracteres, al menos una minúscula, mayúscula y un número"
+          },
         ]}
       />
     </div>
