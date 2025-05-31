@@ -19,6 +19,7 @@ interface ModalFormProps {
         min?: number; 
         max?: number;
         title?: string;
+        autoFocus?: boolean;
         
     }[];
 }
@@ -253,6 +254,7 @@ return (
                         max={field.max}
                         className="w-full p-2 border rounded-md"
                         title={field.title}
+                        autoFocus={field.autoFocus}
                     />
                     )}
                 </div>
