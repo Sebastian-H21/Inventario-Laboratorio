@@ -72,7 +72,7 @@ const ViewEstudiantes: React.FC = () => {
 
     const fields = [
         { name: "numero_control", label: "Numero de control", type: "text", placeholder: "Ingrese el NC", minLength: 9, maxLength: 9,required: true, pattern: "^[0-9]{9}$",
-            title: "El numero de control debe ser de 9 numeros"  },
+            title: "El numero de control debe ser de 9 numeros" },
         { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del estudiante",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
         { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
         { name: "carrera", label: "Carrera", type: "select", placeholder: "Ingrese la carrera",options: [
