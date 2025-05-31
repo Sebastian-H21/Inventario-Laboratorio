@@ -121,9 +121,9 @@ const ViewPrestamo: React.FC = () => {
 
     const fields = [
         
-        { name: "fecha_devolucion", label: "Fecha devolucion", type: "datetime-local", placeholder: "Ingrese la fecha de devolucion",required: true},
+        { name: "fecha_devolucion", label: "Fecha devolucion", type: "date", placeholder: "Ingrese la fecha de devolucion",required: true},
         { name: "numero_control", label: "Numero de control", type: "text", placeholder: "Ingrese el ID del alumno",required: true,minLength: 9, maxLength: 9,list: "lista-alumnos",
-            title: "El numero de control debe ser de 9 numeros"  },
+            title: "El numero de control debe ser de 9 numeros" },
         { name: "practica", label: "Práctica", type: "text", placeholder: "Ingrese el nombre de la práctica",maxLength: 50,required: true,pattern: "^[A-Za-z0-9áéíóúÁÉÍÓÚñÑ\\s]+$"},
         { name: "id_materia", label: "Materia", type: "select", required: true,
             options: materias.map(ma => ({
