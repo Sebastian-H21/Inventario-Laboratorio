@@ -64,7 +64,9 @@ const ViewMarcas: React.FC = () => {
     ];
 
     const fields = [
-        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre de la marca", maxLength: 30, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9\\s]+$"},
+        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre de la marca", maxLength: 30, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9\\s]+$",
+            autoFocus: true
+        },
         
     ];
 

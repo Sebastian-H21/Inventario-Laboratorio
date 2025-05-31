@@ -71,7 +71,7 @@ const ViewEncargados: React.FC = () => {
     ];
 
     const fields = [
-    { name: "email", label: "Correo", type: "text", placeholder: "Ingrese el Correo", minLength: 10,required: true},
+    { name: "email", label: "Correo", type: "text", placeholder: "Ingrese el Correo", minLength: 10,required: true,autoFocus: true},
     { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del encargado",minLength: 3,maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
     { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",minLength: 3,maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
     { name: "password", label: "Contraseña", type: "password", placeholder: "Ingrese la contraseña",minLength: 8,maxLength: 12,pattern:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
