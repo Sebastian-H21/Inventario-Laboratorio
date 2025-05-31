@@ -139,6 +139,10 @@ const handleSubmit = async (prestamo: Prestamo) => {
             return;
         }
 
+                const fechaSoloDia = new Date(prestamo.fecha_devolucion);
+        fechaSoloDia.setHours(16, 0, 0, 0); 
+
+        prestamo.fecha_devolucion = formatDateToMySQL(fechaSoloDia.toISOString());
         prestamo.fecha_devolucion = formatDateToMySQL(prestamo.fecha_devolucion);
 
         // Validación de materiales
