@@ -48,6 +48,9 @@ Route::middleware('auth:encargado')->group(function () {
 
     Route::apiResource('materias', MateriaController::class);
     Route::post('/materias/{id}/restaurar', [MateriaController::class, 'restaurar']);
+
+    Route::apiResource('laboratorios', MarcaController::class);
+    Route::post('/laboratorios/{id}/restaurar', [MarcaController::class, 'restaurar']);
 });
 
 // Rutas exclusivas para administradores
