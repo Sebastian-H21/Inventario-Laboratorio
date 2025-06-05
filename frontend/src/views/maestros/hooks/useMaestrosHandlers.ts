@@ -60,31 +60,52 @@ interface Params {
         }
     };
 
-    const handleSubmit = async (maestro: Maestro) => {
-        try {
-            const isEdit = !!editingMaestro;
-            const rfcDuplicado = data.some((item) =>
-            item.rfc === maestro.rfc &&
-            (!isEdit || item.id !== maestro.id));
+const handleSubmit = async (maestro: Maestro) => {
+    try {
+        const isEdit = !!editingMaestro;
 
+        // Verificar si existe un maestro archivado con el mismo RFC
+        const maestroArchivado = data.find(
+            (item) =>
+                item.rfc === maestro.rfc &&
+                item.deleted_at !== null &&
+                (!isEdit || item.id !== maestro.id)
+        );
 
-            if (rfcDuplicado) {
-                toast.error(`Error: Ya existe un material con ese codigo "${maestro.rfc}"`);
-                return;
-            }       
-            const response = await saveOrUpdateMaestro(maestro, isEdit);
-            setData((prev) =>
-                isEdit ? prev.map((m) => (m.id === maestro.id ? response.data : m)) : [...prev, response.data]
-            );
-
-            toast.success(isEdit ? "Maestro actualizado exitosamente" : "Maestro registrado exitosamente");
-            setIsModalOpen(false);
-            } catch (error: any) {
-            console.error(error);
-            toast.error(error?.response?.data?.message || "Ocurrió un error inesperado.");
-
+        if (maestroArchivado) {
+            toast.error(`Ya existe un maestro archivado con el RFC "${maestro.rfc}". Por favor, restaúralo.`);
+            return;
         }
-    };
+
+        // Verificar si ya existe un maestro activo con el mismo RFC
+        const rfcDuplicado = data.some(
+            (item) =>
+                item.rfc === maestro.rfc &&
+                item.deleted_at === null &&
+                (!isEdit || item.id !== maestro.id)
+        );
+
+        if (rfcDuplicado) {
+            toast.error(`Ya existe un maestro activo con el RFC "${maestro.rfc}".`);
+            return;
+        }
+
+        // Guardar o actualizar
+        const response = await saveOrUpdateMaestro(maestro, isEdit);
+
+        setData((prev) =>
+            isEdit
+                ? prev.map((m) => (m.id === maestro.id ? response.data : m))
+                : [...prev, response.data]
+        );
+
+        toast.success(isEdit ? "Maestro actualizado exitosamente" : "Maestro registrado exitosamente");
+        setIsModalOpen(false);
+    } catch (error: any) {
+        console.error(error);
+        toast.error(error?.response?.data?.message || "Ocurrió un error inesperado.");
+    }
+};
 
 
     const handleExportMaestros = async ({ tipo }: { tipo: "activos" | "completados" }) => {

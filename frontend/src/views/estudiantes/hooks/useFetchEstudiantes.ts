@@ -6,6 +6,8 @@ const useFetchEstudiantes = (verArchivados = false) => {
     const [data, setData] = useState<Estudiante[]>([]);
     const [loading, setLoading] = useState(true);
 
+
+
     const fetchData = async () => {
         try {
             const response = await api.get('/estudiantes', { params: { verArchivados }                 
@@ -23,6 +25,9 @@ const useFetchEstudiantes = (verArchivados = false) => {
     }, [verArchivados]);
 
     return { data, setData, loading };
+
+
+
 };
 
 export default useFetchEstudiantes;

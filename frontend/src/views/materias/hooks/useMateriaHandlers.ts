@@ -62,6 +62,21 @@ interface Params {
     const handleSubmit = async (materia: Materia) => {
         try {
             const isEdit = !!editingMateria;
+            const materiaArchivado = data.find(
+                (item) =>
+                    item.nombre === materia.nombre &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== materia.id)
+                );
+                    
+                if (materiaArchivado) {
+                    toast.error(`Ya existe un materia archivado con el nombre "${materia.nombre}". Por favor, restaúralo.`);
+                    return;
+                }
+
+
+
+
             const nombreDuplicado = data.some((item) =>
             item.nombre === materia.nombre &&
             (!isEdit || item.id !== materia.id));

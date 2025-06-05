@@ -63,7 +63,18 @@ export const useEstudiantesHandlers = ({
     const handleSubmit = async (estudiante: Estudiante) => {
         try {
             const isEdit = !!editingEstudiante;
-
+            const estudianteArchivado = data.find(
+                (item) =>
+                    item.numero_control === estudiante.numero_control &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== estudiante.id)
+                );
+                    
+                if (estudianteArchivado) {
+                    toast.error(`Ya existe un estudiante archivado con el número de control "${estudiante.numero_control}". Por favor, restaúralo.`);
+                    return;
+                }
+                        
             const numeroControlDuplicado = data.some(
                 (item) =>
                     item.numero_control === estudiante.numero_control &&

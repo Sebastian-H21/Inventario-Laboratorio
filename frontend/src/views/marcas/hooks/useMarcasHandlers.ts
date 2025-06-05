@@ -12,7 +12,6 @@ interface Params {
     setEditingMarca: (marca: Marca | null) => void;
     editingMarca: Marca | null;
     }
-
     export const useMarcasHandlers = ({
     data,    
     setData,
@@ -24,7 +23,6 @@ interface Params {
         setEditingMarca(marca);
         setIsModalOpen(true);
     };
-
     const handleDelete = async (id: number) => {
         const result = await Swal.fire({
         title: "¿Estás seguro?",
@@ -35,7 +33,6 @@ interface Params {
         cancelButtonColor: "#d33",
         confirmButtonText: "Sí, archivar!",
         });
-
         if (result.isConfirmed) {
         try {
             await deleteMarca(id);
@@ -47,7 +44,6 @@ interface Params {
         }
         }
     };
-
     const handleRestore = async (id: number) => {
         try {
         await api.post(`/marcas/${id}/restaurar`);
@@ -58,15 +54,23 @@ interface Params {
         Swal.fire("Error", "No se pudo restaurar la marca", "error");
         }
     };
-
     const handleSubmit = async (marca: Marca) => {
         try {
             const isEdit = !!editingMarca;
+            const marcaArchivado = data.find(
+                (item) =>
+                    item.nombre === marca.nombre &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== marca.id)
+                );
+                    
+                if (marcaArchivado) {
+                    toast.error(`Ya existe un marca archivado con el nombre "${marca.nombre}". Por favor, restaúralo.`);
+                    return;
+                }
             const nombreDuplicado = data.some((item) =>
             item.nombre === marca.nombre &&
             (!isEdit || item.id !== marca.id));
-
-
             if (nombreDuplicado) {
                 toast.error(`Error: Ya existe una marca con ese nombre "${marca.nombre}"`);
                 return;
@@ -75,13 +79,11 @@ interface Params {
             setData((prev) =>
                 isEdit ? prev.map((m) => (m.id === marca.id ? response.data : m)) : [...prev, response.data]
             );
-
             toast.success(isEdit ? "Marca actualizada exitosamente" : "Marca registrada exitosamente");
             setIsModalOpen(false);
             } catch (error: any) {
             console.error(error);
             toast.error(error?.response?.data?.message || "Ocurrió un error inesperado.");
-
         }
     };
 

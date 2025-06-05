@@ -62,6 +62,20 @@ interface Params {
     const handleSubmit = async (ubicacion: Ubicacion) => {
         try {
             const isEdit = !!editingUbicacion;
+            const ubicacionArchivado = data.find(
+                (item) =>
+                    item.nombre === ubicacion.nombre &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== ubicacion.id)
+                );
+                    
+                if (ubicacionArchivado) {
+                    toast.error(`Ya existe un ubicación archivada con el nombre "${ubicacion.nombre}". Por favor, restaúralo.`);
+                    return;
+                }
+
+
+
             const nombreDuplicado = data.some((item) =>
             item.nombre === ubicacion.nombre &&
             (!isEdit || item.id !== ubicacion.id));

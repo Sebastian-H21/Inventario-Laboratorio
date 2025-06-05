@@ -5,7 +5,7 @@ import api from "../../../utils/api";
 const useFetchMaestros = (verArchivados = false) => {
     const [data, setData] = useState<Maestro[]>([]);
     const [loading, setLoading] = useState(true);
-
+    
     const fetchData = async () => {
         try {
             const response = await api.get('/maestros', { params: { verArchivados }                 
@@ -23,6 +23,7 @@ const useFetchMaestros = (verArchivados = false) => {
     }, [verArchivados]);
 
     return { data, setData, loading };
+
 };
 
 export default useFetchMaestros;

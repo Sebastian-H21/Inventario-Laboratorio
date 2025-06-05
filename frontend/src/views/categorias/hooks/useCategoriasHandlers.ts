@@ -62,6 +62,20 @@ interface Params {
     const handleSubmit = async (categoria: Categoria) => {
         try {
             const isEdit = !!editingCategoria;
+
+            const categoriaArchivado = data.find(
+                (item) =>
+                    item.nombre === categoria.nombre &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== categoria.id)
+                );
+                    
+                if (categoriaArchivado) {
+                    toast.error(`Ya existe un categoría archivado con el número de control "${categoria.nombre}". Por favor, restaúralo.`);
+                    return;
+                }
+
+
             const nombreDuplicado = data.some((item) =>
             item.nombre === categoria.nombre &&
             (!isEdit || item.id !== categoria.id));
@@ -72,6 +86,7 @@ interface Params {
                 return;
             }       
             const response = await saveOrUpdateCategoria(categoria, isEdit);
+
             setData((prev) =>
                 isEdit ? prev.map((m) => (m.id === categoria.id ? response.data : m)) : [...prev, response.data]
             );

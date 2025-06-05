@@ -97,6 +97,18 @@ interface Params {
             material.observaciones = "Sin observaciones";
         }
         const isEdit = !!editingMaterial;
+        const materialArchivado = data.find(
+                (item) =>
+                    item.codigo === material.codigo &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== material.id)
+                );
+                    
+                if (materialArchivado) {
+                    toast.error(`Ya existe un material archivado con el código "${material.codigo}". Por favor, restaúralo.`);
+                    return;
+                }
+        
         const codigoDuplicado = data.some(
             (item) =>
             item.codigo === material.codigo &&

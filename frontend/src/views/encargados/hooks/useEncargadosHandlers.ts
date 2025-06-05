@@ -62,7 +62,17 @@ interface Params {
     const handleSubmit = async (encargado: Encargado) => {
         try {
             const isEdit = !!editingEncargado;
-
+            const encargadoArchivado = data.find(
+                (item) =>
+                    item.email === encargado.email &&
+                    item.deleted_at !== null &&
+                    (!isEdit || item.id !== encargado.id)
+                );
+                    
+                if (encargadoArchivado) {
+                    toast.error(`Ya existe un encargado archivado con el correo"${encargado.email}". Por favor, restaúralo.`);
+                    return;
+                }
             const emailDuplicado = data.some(
                 (item) =>
                     item.email === encargado.email &&
