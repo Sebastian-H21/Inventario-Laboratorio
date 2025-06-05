@@ -73,47 +73,41 @@ return (
         </div>
         {/* Tabla */}
         <div className="flex-1 p-4">
-            <div className="overflow-x-auto shadow-md rounded-lg">
-                <table className="min-w-full table-auto">
-                    <thead>
+            <div className="w-full overflow-x-auto shadow-md rounded-lg">
+                    <table className="min-w-full table-auto bg-white dark:bg-gray-800">
+                        <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id} className="bg-gray-100 ">
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        className="px-4 py-2 text-left text-sm font-semibold text-gray-600 cursor-pointer"
-                                        onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                        {header.column.getIsSorted() === "asc" ? " 🔼" : ""}
-                                        {header.column.getIsSorted() === "desc" ? " 🔽" : ""}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className="border-b">
-                                {row.getVisibleCells().map((cell) => (
-                                <td
-                                    key={cell.id}
-                                    className="px-4 py-2 text-sm text-gray-700 dark:text-white"
+                            <tr key={headerGroup.id} className="bg-gray-100 dark:bg-gray-700">
+                            {headerGroup.headers.map((header) => (
+                                <th
+                                key={header.id}
+                                className="px-4 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300 cursor-pointer"
+                                onClick={header.column.getToggleSortingHandler()}
                                 >
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </td>
-                                ))}
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                {header.column.getIsSorted() === "asc" ? " 🔼" : ""}
+                                {header.column.getIsSorted() === "desc" ? " 🔽" : ""}
+                                </th>
+                            ))}
                             </tr>
                         ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody className="bg-white dark:bg-gray-800">
+                        {table.getRowModel().rows.map((row) => (
+                            <tr key={row.id} className="border-b border-gray-200 dark:border-gray-600">
+                            {row.getVisibleCells().map((cell) => (
+                                <td
+                                key={cell.id}
+                                className="px-4 py-2 text-sm text-gray-700 dark:text-white bg-white dark:bg-gray-800"
+                                >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </td>
+                            ))}
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
                 {/* Controles de Paginación */}
                 <div className="flex justify-between items-center mt-4">
                     {/* Selector de cantidad de registros por página */}
