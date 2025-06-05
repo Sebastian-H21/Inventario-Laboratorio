@@ -39,6 +39,19 @@ const ViewPrestamo: React.FC = () => {
             return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
         };
 
+        const getDefaultFechaDevolucion = () => {
+        const now = new Date();
+        now.setHours(15, 0, 0, 0); 
+
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+
     const columns: ColumnDef<Prestamo>[] = [
     { accessorKey: "id", header: "ID" },
     { accessorKey: "fecha_prestamo", header: "Fecha Préstamo",cell: ({ row }) => formatDateTime(row.original.fecha_prestamo) },
@@ -121,7 +134,7 @@ const ViewPrestamo: React.FC = () => {
 
     const fields = [
         
-        { name: "fecha_devolucion", label: "Fecha devolucion", type: "date", placeholder: "Ingrese la fecha de devolucion",required: true},
+        { name: "fecha_devolucion", label: "Fecha devolucion", type: "datetime-local", placeholder: "Ingrese la fecha de devolucion",required: true,defaultValue: getDefaultFechaDevolucion(),},
         { name: "numero_control", label: "Numero de control", type: "text", placeholder: "Ingrese el ID del alumno",required: true,minLength: 9, maxLength: 9,list: "lista-alumnos",
             title: "El numero de control debe ser de 9 numeros" },
         { name: "practica", label: "Práctica", type: "text", placeholder: "Ingrese el nombre de la práctica",maxLength: 50,required: true,pattern: "^[A-Za-z0-9áéíóúÁÉÍÓÚñÑ\\s]+$"},
@@ -155,9 +168,9 @@ const ViewPrestamo: React.FC = () => {
         </div>
     )
     return (
-        <div className="flex bg-white dark:bg-gray-800">
+        <div className="flex min-h-screen w-full  bg-white dark:bg-gray-800">
             <Sidebar />
-            <div className="p-4 flex-1">
+            <div className="p-4 flex-1 bg-white dark:bg-gray-800 ">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex gap-2">
                             <button
@@ -174,7 +187,7 @@ const ViewPrestamo: React.FC = () => {
                             </button>
                         </div>
                         <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                            Préstamos
+                            {verArchivados ? "Préstamos Completados" : "Préstamos Activos"}
                         </div>
                     </div>
                 <Table
