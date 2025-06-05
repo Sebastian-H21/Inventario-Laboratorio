@@ -19,7 +19,7 @@ export const saveOrUpdateMarca = async (marca: Marca, isEdit: boolean) => {
             return response.data;
         }
     } catch (error: any) {
-        const message = error.response?.data?.message || `Error al ${isEdit ? "actualizar" : "registrar"} el marca`;
+        const message = error.response?.data?.message || `Error al ${isEdit ? "actualizar" : "registrar"} la marca`;
         throw new Error(message);
     }
 };
