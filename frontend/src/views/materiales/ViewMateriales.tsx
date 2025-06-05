@@ -84,7 +84,7 @@ const ViewMateriales: React.FC = () => {
 
     const fields = [
         { name: "codigo", label: "Código", type: "text", placeholder: "Ingrese el codigo", minLength: 10, maxLength: 10,required: true, pattern: "^[0-9]{10}$",autoFocus: true},
-        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del material",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
+        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del material",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
         { name: "cantidad", label: "Cantidad", type: "number", placeholder: "Ingrese la cantidad",required: true,min: 1, max: 200 },
         { name: "observaciones", label: "Comentarios", type: "text", placeholder: "Comentario (opcional)",maxLength: 50,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
         {name: "id_marca",label: "Marca",type: "select",required: true,
@@ -125,9 +125,9 @@ const ViewMateriales: React.FC = () => {
     }
 
     return (
-        <div className="flex bg-white dark:bg-gray-800">
+        <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
         <Sidebar />
-        <div className="p-4 flex-1">
+        <div className="p-4 flex-1 bg-white dark:bg-gray-800">
             <div className="flex justify-between items-center mb-4">
                     <div className="flex gap-2">
                         <button
@@ -144,7 +144,7 @@ const ViewMateriales: React.FC = () => {
                         </button>
                     </div>
                     <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                        Materiales
+                        {verArchivados ? "Materiales Archivados" : "Materiales Activos"}
                     </div>
             </div>
 

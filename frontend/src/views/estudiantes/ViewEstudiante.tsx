@@ -124,9 +124,9 @@ const ViewEstudiantes: React.FC = () => {
 
 
     return (
-        <div className="flex bg-white dark:bg-gray-800">
+        <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
         <Sidebar />
-        <div className="p-4 flex-1">
+        <div className="p-4 flex-1 bg-white dark:bg-gray-800">
             <div className="flex justify-between items-center mb-4">
                     <div className="flex gap-2">
                         <button
@@ -143,10 +143,9 @@ const ViewEstudiantes: React.FC = () => {
                         </button>
                     </div>
                     <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                        Estudiantes
+                        {verArchivados ?  "Estudiantes Archivados" : "Estudiantes Activos"}
                     </div>
             </div>
-
             <Table
             data={data}
             columns={columns}
