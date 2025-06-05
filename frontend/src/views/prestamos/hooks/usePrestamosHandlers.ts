@@ -127,22 +127,15 @@ const handleSubmit = async (prestamo: Prestamo) => {
 
         const isFechaDevolucionValida = (fechaDevStr: string): boolean => {
             const fechaDev = new Date(fechaDevStr);
-            const fechaHoy = new Date();
-            // Normalizamos ambas fechas para ignorar la hora
-            fechaDev.setHours(0, 0, 0, 0);
-            fechaHoy.setHours(0, 0, 0, 0);
-            return fechaDev.getTime() >= fechaHoy.getTime();
+            const ahora = new Date();
+            return fechaDev.getTime() >= ahora.getTime();
         };
 
         if (!isFechaDevolucionValida(prestamo.fecha_devolucion)) {
-            toast.error("La fecha de devolución no puede ser anterior a la fecha actual.");
+            toast.error("La fecha y hora de devolución no puede ser anterior a la actual.");
             return;
         }
 
-                const fechaSoloDia = new Date(prestamo.fecha_devolucion);
-        fechaSoloDia.setHours(16, 0, 0, 0); 
-
-        prestamo.fecha_devolucion = formatDateToMySQL(fechaSoloDia.toISOString());
         prestamo.fecha_devolucion = formatDateToMySQL(prestamo.fecha_devolucion);
 
         // Validación de materiales
@@ -161,7 +154,6 @@ const handleSubmit = async (prestamo: Prestamo) => {
             return;
         }
 
-        // Guardar o actualizar el préstamo
         const isEdit = !!editingPrestamo;
         const response = await saveOrUpdatePrestamo(prestamo, isEdit);
 
@@ -171,14 +163,15 @@ const handleSubmit = async (prestamo: Prestamo) => {
                 : [...prev, response.data]
         );
 
-            toast.success(isEdit ? "Préstamo actualizado exitosamente" : "Préstamo registrado exitosamente");
-            setIsModalOpen(false);
-            setEditingPrestamo(null); // Limpiar edición para siguiente uso
-        } catch (error: any) {
-            console.error(error);
-            toast.error(error.response?.data?.message || "Ocurrió un error inesperado.");
-        }
+        toast.success(isEdit ? "Préstamo actualizado exitosamente" : "Préstamo registrado exitosamente");
+        setIsModalOpen(false);
+        setEditingPrestamo(null);
+    } catch (error: any) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Ocurrió un error inesperado.");
+    }
 };
+
 
     const handleExportFiltrado = async ({
         tipo,
@@ -241,11 +234,7 @@ const handleSubmit = async (prestamo: Prestamo) => {
                 toast.success("Exportación realizada con éxito.");
             } else {
                 // Exportación de préstamos activos
-                const prestamosFiltrados = prestamos.filter((p: any) => {
-                    const fechaDevolucion = new Date(p.fecha_devolucion);
-                    const esActivo = !p.deleted_at && fechaDevolucion >= ahora;
-                    return esActivo;
-                });
+                const prestamosFiltrados = prestamos.filter((p: any) => !p.deleted_at);
 
                 if (prestamosFiltrados.length === 0) {
                     toast.info("No se encontraron préstamos para exportar.");
