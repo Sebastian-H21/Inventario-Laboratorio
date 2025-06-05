@@ -20,6 +20,7 @@ interface ModalFormProps {
         max?: number;
         title?: string;
         autoFocus?: boolean;
+        defaultValue: string;
         
     }[];
 }
@@ -34,10 +35,18 @@ interface ModalFormProps {
 
     const [formData, setFormData] = useState(initialData || {})
 
-
     useEffect(() => {
-        setFormData(initialData || {});
-    }, [initialData]);
+    if (initialData) {
+        setFormData(initialData);
+    } else {
+        const initialValues: Record<string, any> = {};
+        fields.forEach((field) => {
+        initialValues[field.name] = field.defaultValue || "";
+        });
+        setFormData(initialValues);
+    }
+    }, [initialData, fields]);
+    
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
