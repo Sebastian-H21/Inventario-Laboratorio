@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 class Encargado extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, SoftDeletes;
-
+    protected $table = 'encargados';
     protected $fillable = [
         'email',
         'nombre',

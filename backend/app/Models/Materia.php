@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Materia extends Model
 {
     use HasFactory,SoftDeletes;
-
+    protected $table = 'materias';
     protected $fillable = [
         'nombre',
     ];

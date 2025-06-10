@@ -10,7 +10,7 @@ class Material extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
+    protected $table = 'materials';
     protected $fillable = [
         'codigo',
         'nombre',
@@ -19,7 +19,7 @@ class Material extends Model
         'id_marca',
         'id_categoria',
         'id_ubicacion',
-
+        'id_laboratorio',
     ];
 
 
@@ -40,6 +40,10 @@ class Material extends Model
     public function ubicacion()
     {
         return $this->belongsTo(Ubicacion::class, 'id_ubicacion')->withTrashed();
+    }
+    public function laboratorio()
+    {
+        return $this->belongsTo(Laboratorio::class, 'id_laboratorio')->withTrashed();
     }
 
 }

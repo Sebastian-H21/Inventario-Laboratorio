@@ -10,7 +10,7 @@ class Estudiantes extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
+    protected $table = 'estudiantes';
     protected $fillable = [
         'numero_control',
         'nombre',

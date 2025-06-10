@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Prestamo extends Model
 {
     use HasFactory, SoftDeletes;
-
+    protected $table = 'prestamos';
     protected $fillable = [
         'fecha_prestamo',
         'fecha_devolucion',
@@ -18,6 +18,7 @@ class Prestamo extends Model
         'id_maestro',
         'id_encargado',
         'id_materia',
+        'id_laboratorio',
     ];
 
     public function estudiante()
@@ -49,6 +50,12 @@ class Prestamo extends Model
     {
         return $this->hasMany(DetallePrestamo::class, 'prestamo_id', 'id')->withTrashed();
     }
+    
+    public function laboratorio()
+    {
+        return $this->belongsTo(Laboratorio::class, 'id_laboratorio')->withTrashed();
+    }
+
 
     protected static function booted()
     {
