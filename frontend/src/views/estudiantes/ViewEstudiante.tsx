@@ -172,12 +172,12 @@ const ViewEstudiantes: React.FC = () => {
             />
 
             <ModalExportar
-            key={isExportModalOpen ? "open" : "closed"} // Fuerza un rerender
+            key={isExportModalOpen ? "open" : "closed"} 
             isOpen={isExportModalOpen}
             onClose={() => setIsExportModalOpen(false)}
             onExport={handleExportEstudiantes}
             mostrarFechas={false}
-            recurso="Estudiantes"
+            recurso="estudiantes"
             />            
         </div>
         </div>
