@@ -1,4 +1,5 @@
 export interface Maestro {
+    deleted_at: null;
     id: number;
     rfc: string;
     nombre: string;
@@ -7,6 +8,7 @@ export interface Maestro {
 }
 
 export interface Material {
+    deleted_at: null;
     id: number;
     codigo: string;
     nombre: string;
@@ -15,15 +17,17 @@ export interface Material {
     id_marca: number;
     id_categoria: number;
     id_ubicacion: number;
+    id_laboratorio: number;
 
 
     marca?: { id: number; nombre: string };
     categoria?: { id: number; nombre: string };
     ubicacion?: { id: number; nombre: string };
-
+    laboratorio?: { id: number; nombre: string };
 }
 
 export interface Encargado {
+    deleted_at: null;
     id: number;
     email: string;
     nombre: string;
@@ -33,6 +37,7 @@ export interface Encargado {
 }           
 
 export interface Estudiante {
+    deleted_at: null;
     id: number;
     numero_control: string;
     nombre: string;
@@ -45,28 +50,37 @@ export interface Estudiante {
 
 
 export interface Marca {
+    deleted_at: null;
     id: number;
     nombre: string;
 }
 
 export interface Categoria {
+    some(arg0: (item: any) => boolean): unknown;
+    find(arg0: (item: any) => boolean): unknown;
+    deleted_at: null;
     id: number;
     nombre: string;
 }
 
 
 export interface Ubicacion {
+    deleted_at: null;
     id: number;
     nombre: string;
 }
 
 export interface Materia {
+    deleted_at: null;
     id: number;
     nombre: string;
 }
 
-
-
+export interface Laboratorio {
+    deleted_at: null;
+    id: number;
+    nombre: string;
+}
 
 export interface Prestamo {
     id: number;
@@ -78,6 +92,7 @@ export interface Prestamo {
     id_encargado?: number;
     id_materia?: number;
     deleted_at?: string | null;
+    id_laboratorio?: number;
     
     
     materiales: string[]; 
@@ -92,6 +107,7 @@ export interface Prestamo {
     maestro?: Maestro;
     encargado?: Encargado;
     materia?: Materia;
+    laboratorio?:Laboratorio;
     
 
     materiales_detalle?: Array<{
