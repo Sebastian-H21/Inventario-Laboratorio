@@ -5,6 +5,7 @@ import api from "../../../utils/api";
 import { toast } from "react-toastify";
 import { Dispatch, SetStateAction } from "react";
 import { exportToExcel, formatMaestrosForXLS } from "../../../utils/exportToExcel";
+import { validarRFCConFecha } from "../../../utils/validarRFC";
 
 interface Params {
     data: Maestro[];
@@ -64,7 +65,12 @@ const handleSubmit = async (maestro: Maestro) => {
     try {
         const isEdit = !!editingMaestro;
 
-        // Verificar si existe un maestro archivado con el mismo RFC
+        // ⚠️ Validación del RFC antes de guardar
+        if (!validarRFCConFecha(maestro.rfc)) {
+            toast.error("El RFC no es válido: debe contener una fecha real y ser mayor de edad.");
+            return;
+        }
+
         const maestroArchivado = data.find(
             (item) =>
                 item.rfc === maestro.rfc &&
@@ -77,7 +83,6 @@ const handleSubmit = async (maestro: Maestro) => {
             return;
         }
 
-        // Verificar si ya existe un maestro activo con el mismo RFC
         const rfcDuplicado = data.some(
             (item) =>
                 item.rfc === maestro.rfc &&
@@ -90,7 +95,6 @@ const handleSubmit = async (maestro: Maestro) => {
             return;
         }
 
-        // Guardar o actualizar
         const response = await saveOrUpdateMaestro(maestro, isEdit);
 
         setData((prev) =>
@@ -123,7 +127,12 @@ const handleSubmit = async (maestro: Maestro) => {
 
                 const dataFormateada = formatMaestrosForXLS(maestros);
 
-                const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+                const formatDate = (d: Date) => {
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const year = d.getFullYear();
+                    return `${day}-${month}-${year}`;
+                };
                 const nombreArchivo = `maestros_${tipo === "completados" ? "archivados" : "activos"}_${formatDate(new Date())}.xlsx`;
 
                 exportToExcel(dataFormateada, nombreArchivo);
