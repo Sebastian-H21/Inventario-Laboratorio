@@ -106,35 +106,54 @@ export const useEstudiantesHandlers = ({
         }
     };
 
-    const handleExportEstudiantes = async ({ tipo }: { tipo: "activos" | "completados" }) => {
-            try {
-                const response = await api.get("/estudiantes", {
-                    params: { verArchivados: tipo === "completados" },
-                });
+    const handleExportEstudiantes = async ({
+        tipo,
+        modalidad,
+        }: {
+        tipo: "activos" | "completados";
+        modalidad?: "Escolarizada" | "Mixta" | "Otra";
+        }) => {
+        try {
+            const response = await api.get("/estudiantes", {
+            params: { verArchivados: tipo === "completados" },
+            });
 
-                const estudiantes = response.data;
+            let estudiantes = response.data as Estudiante[];
 
-                if (estudiantes.length === 0) {
-                    toast.info("No se encontraron estudiantes para exportar.");
-                    return;
-                }
-
-                const dataFormateada = formatEstudiantesForXLS(estudiantes);
-
-                const formatDate = (d: Date) => d.toISOString().slice(0, 10);
-                const nombreArchivo = `estudiantes_${tipo === "completados" ? "archivados" : "activos"}_${formatDate(new Date())}.xlsx`;
-
-                exportToExcel(dataFormateada, nombreArchivo);
-                toast.success("Exportación realizada con éxito.");
-            } catch (error) {
-                console.error("Error al exportar estudiantes:", error);
-                toast.error("Ocurrió un error al exportar.");
+            // Filtrar por modalidad si se especifica
+            if (modalidad) {
+            estudiantes = estudiantes.filter((e) => e.modalidad === modalidad);
             }
-        };
 
+            // Validar si hay resultados luego de filtrar (o si no hay nada desde el inicio)
+            if (estudiantes.length === 0) {
+            const mensaje = modalidad
+                ? `No se encontraron estudiantes archivados con modalidad ${modalidad}.`
+                : "No se encontraron estudiantes para exportar.";
+            toast.info(mensaje);
+            return;
+            }
 
+            const dataFormateada = formatEstudiantesForXLS(estudiantes);
 
+            const formatDate = (d: Date) => {
+            const day = String(d.getDate()).padStart(2, "0");
+            const month = String(d.getMonth() + 1).padStart(2, "0");
+            const year = d.getFullYear();
+            return `${day}-${month}-${year}`;
+            };
 
+            const nombreArchivo = `estudiantes_${
+            tipo === "completados" ? "archivados" : "activos"
+            }${modalidad ? "_" + modalidad.toLowerCase() : ""}_${formatDate(new Date())}`;
+
+            exportToExcel(dataFormateada, nombreArchivo);
+            toast.success("Exportación realizada con éxito.");
+        } catch (error: any) {
+            console.error("Error al exportar estudiantes:", error);
+            toast.error(error.response?.data?.message || "Ocurrió un error al exportar.");
+        }
+    };
 
     return { handleEdit, 
             handleDelete, 
