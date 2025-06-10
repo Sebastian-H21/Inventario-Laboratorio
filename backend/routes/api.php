@@ -11,6 +11,7 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\UbicacionController;
 use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\LaboratorioController;
 
 // Login único
 Route::post('/login', [EncargadoController::class, 'login']);
@@ -49,8 +50,8 @@ Route::middleware('auth:encargado')->group(function () {
     Route::apiResource('materias', MateriaController::class);
     Route::post('/materias/{id}/restaurar', [MateriaController::class, 'restaurar']);
 
-    Route::apiResource('laboratorios', MarcaController::class);
-    Route::post('/laboratorios/{id}/restaurar', [MarcaController::class, 'restaurar']);
+    Route::apiResource('laboratorios', LaboratorioController::class);
+    Route::post('/laboratorios/{id}/restaurar', [LaboratorioController::class, 'restaurar']);
 });
 
 // Rutas exclusivas para administradores
