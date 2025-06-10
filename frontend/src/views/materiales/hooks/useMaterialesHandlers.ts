@@ -25,18 +25,22 @@ interface Params {
     const [marcas, setMarcas] = useState<Marca[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
+    const [laboratorios, setLaboratorios] = useState<Marca[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
         try {
-            const [resMarcas, resCategorias, resUbicaciones] = await Promise.all([
+            const [resMarcas, resCategorias, resUbicaciones,resLaboratorios] = await Promise.all([
             api.get("/marcas"),
             api.get("/categorias"),
             api.get("/ubicacions"),
+            api.get("/laboratorios"),
+
             ]);
             setMarcas(resMarcas.data);
             setCategorias(resCategorias.data);
             setUbicaciones(resUbicaciones.data);
+            setLaboratorios(resLaboratorios.data);
         } catch (error) {
             console.error("Error al cargar datos auxiliares:", error);
         }
@@ -133,15 +137,39 @@ interface Params {
         }
     };
 
-
-    const handleExportMateriales = async ({ tipo }: { tipo: "activos" | "completados" }) => {
+    const handleExportMateriales = async ({
+        tipo,
+        laboratorioId,
+    }: {
+        tipo: "activos" | "completados";
+        laboratorioId?: number;
+    }) => {
         try {
             const response = await api.get("/materials", {
                 params: { verArchivados: tipo === "completados" },
             });
 
-            const materiales = response.data;
+            let materiales = response.data;
 
+            // Filtrar por laboratorio si se seleccionó uno
+            if (laboratorioId) {
+                materiales = materiales.filter(
+                    (m: any) => m.laboratorio?.id === laboratorioId
+                );
+            }
+          // Formatear nombre
+            const laboratorioNombre = laboratorioId
+                ? laboratorios.find(lab => lab.id === laboratorioId)?.nombre ?? `lab_${laboratorioId}`
+                : "todos_labs";
+
+            // QUitar acentos y dejar en minusculas 
+            const limpiarNombre = (nombre: string) =>
+                nombre.normalize("NFD") 
+                    .replace(/[\u0300-\u036f]/g, "") 
+                    .replace(/[^a-z0-9]/gi, "_") 
+                        .toLowerCase();
+            const labNombreLimpio = limpiarNombre(laboratorioNombre);
+            
             if (materiales.length === 0) {
                 toast.info("No se encontraron materiales para exportar.");
                 return;
@@ -149,8 +177,13 @@ interface Params {
 
             const dataFormateada = formatMaterialesForXLS(materiales);
 
-            const formatDate = (d: Date) => d.toISOString().slice(0, 10);
-            const nombreArchivo = `materiales_${tipo === "completados" ? "archivados" : "activos"}_${formatDate(new Date())}.xlsx`;
+            const formatDate = (d: Date) => {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}-${month}-${year}`;
+            };
+            const nombreArchivo = `materiales_${tipo === "completados" ? "archivados" : "activos"}_${labNombreLimpio}_${formatDate(new Date())}.xlsx`;
 
             exportToExcel(dataFormateada, nombreArchivo);
             toast.success("Exportación realizada con éxito.");
@@ -160,6 +193,7 @@ interface Params {
         }
     };
 
+
     return {
         handleEdit,
         handleDelete,
@@ -168,6 +202,7 @@ interface Params {
         marcas,
         categorias,
         ubicaciones,
+        laboratorios,
         handleExportMateriales
         
     };
