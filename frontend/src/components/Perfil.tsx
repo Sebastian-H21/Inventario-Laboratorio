@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
-import ModalForm from "../components/Ventana"; 
+import ModalForm from "./Ventana"; 
 import api from "../utils/api"; 
 import { toast } from "react-toastify";
 
