@@ -62,7 +62,8 @@ export const formatPrestamosForXLS = (
                 : '',
             Marca: m.marca
                 ? `${m.marca.nombre}`
-                : '',            
+                : '',
+            Modelo: m.modelo,           
             Ubicación: m.ubicacion
                 ? `${m.ubicacion.nombre}`
                 : '', 

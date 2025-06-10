@@ -43,6 +43,7 @@ const ViewMateriales: React.FC = () => {
         header: "Marca",
         accessorFn: (row) => row.marca?.nombre || "Sin marca"
         },
+        { accessorKey: "modelo", header: "Modelo" },
         {
         header: "Categoría",
         accessorFn: (row) => row.categoria?.nombre || "Sin categoría"
@@ -98,6 +99,7 @@ const ViewMateriales: React.FC = () => {
                 label: `${m.id} (${m.nombre})`
                 })),
         },
+        {name: "modelo", label: "Modelo", type: "text", placeholder: "Ingrese el modelo del material",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s-_]*$"},
 
         {name: "id_categoria",label: "Categoría",type: "select",required: true,
             options: categorias.map(c => ({

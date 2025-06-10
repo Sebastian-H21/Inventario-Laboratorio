@@ -14,6 +14,7 @@ export interface Material {
     nombre: string;
     cantidad: number;
     observaciones:string;
+    modelo:string;
     id_marca: number;
     id_categoria: number;
     id_ubicacion: number;

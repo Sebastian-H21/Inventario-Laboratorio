@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nombre', 30);
             $table->integer('cantidad');
             $table->string('observaciones', 50);
+            $table->string('modelo', 50);
             $table->foreignId('id_marca')->constrained('marcas');
             $table->foreignId('id_categoria')->constrained('categorias');
             $table->foreignId('id_ubicacion')->constrained('ubicacions');
