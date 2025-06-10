@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.0.15",
     "@tanstack/react-table": "^8.21.2",
     "axios": "^1.8.4",
+    "jsbarcode": "^3.12.1",
     "lucide-react": "^0.488.0",
     "motion": "^12.7.2",
     "react": "^19.1.0",
