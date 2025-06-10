@@ -5,7 +5,7 @@ const ViewHome = () => {
     return (
         <div className="flex bg-white dark:bg-gray-800 min-h-screen">
             <Sidebar />
-            <div className="flex-1 p-4">
+            <div className="flex-1 p-4 bg-white dark:bg-gray-800">
                 <Home />
                 <br />
                 <br />
