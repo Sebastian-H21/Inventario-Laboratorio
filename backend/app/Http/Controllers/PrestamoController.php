@@ -9,6 +9,7 @@ use App\Models\Material;
 use App\Models\DetallePrestamo;
 use Illuminate\Http\Request;
 use App\Models\Materia;
+use App\Models\Laboratorio;
 
 class PrestamoController extends Controller
 {
@@ -24,6 +25,7 @@ class PrestamoController extends Controller
                 'encargado',
                 'materialesDetalle.material',
                 'materia',
+                'laboratorio',
             ])
             ->when($verArchivados, fn($q) => $q->onlyTrashed())
             ->get()
@@ -51,69 +53,86 @@ class PrestamoController extends Controller
     }
 
 
-    public function store(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'numero_control' => 'required|exists:estudiantes,numero_control',
-                'rfc' => 'required|exists:maestros,rfc',
-                'id_materia' => 'required|exists:materias,id',
-                'fecha_devolucion' => 'required|date|after_or_equal:today|date_format:Y-m-d H:i:s',
-                'practica' => 'required|string|max:50',
-                'materiales' => 'required|array|min:1',
-                'materiales.*' => 'string|exists:materials,codigo',
-            ]);
+public function store(Request $request)
+{
+    try {
+        $validated = $request->validate([
+            'numero_control' => 'required|exists:estudiantes,numero_control',
+            'rfc' => 'required|exists:maestros,rfc',
+            'id_materia' => 'required|exists:materias,id',
+            'fecha_devolucion' => 'required|date|after_or_equal:today|date_format:Y-m-d H:i:s',
+            'practica' => 'required|string|max:50',
+            'materiales' => 'required|array|min:1',
+            'materiales.*' => 'string|exists:materials,codigo',
+            'id_laboratorio' => 'required|exists:laboratorios,id'
+        ]);
 
-            $estudiante = Estudiantes::where('numero_control', $request->numero_control)->first();
-            $maestro = Maestro::where('rfc', $request->rfc)->first();
-            $materia = Materia::findOrFail($request->id_materia);
-            $encargadoId = auth('encargado')->id();
+        $estudiante = Estudiantes::where('numero_control', $request->numero_control)->first();
+        $maestro = Maestro::where('rfc', $request->rfc)->first();
+        $materia = Materia::findOrFail($request->id_materia);
+        $encargadoId = auth('encargado')->id();
+        $laboratorio = Laboratorio::findOrFail($request->id_laboratorio);
 
-            
-            $prestamoData = [
-                'fecha_prestamo' => now()->format('Y-m-d H:i:s'),
-                'fecha_devolucion' => $request->fecha_devolucion,
-                'practica' => $request->practica,
-                'id_estudiante' => $estudiante->id,
-                'id_maestro' => $maestro->id,
-                'id_encargado' => $encargadoId,
-                'id_materia' => $materia->id,
-            ];
+        // Obtener materiales
+        $materiales = Material::whereIn('codigo', $request->materiales)->get();
 
-            
-            $prestamo = Prestamo::create($prestamoData);
-            $materiales = Material::whereIn('codigo', $request->materiales)->get();
+        // Validar que todos los materiales pertenezcan al laboratorio seleccionado
+        $materialesInvalidos = $materiales->filter(function ($material) use ($laboratorio) {
+            return $material->id_laboratorio !== $laboratorio->id;
+        });
 
-            foreach ($materiales as $material) {
-                DetallePrestamo::create([
-                    'prestamo_id' => $prestamo->id,
-                    'material_id' => $material->id,
-                ]);
-            }
-
-            
-            $prestamo->load(['estudiante', 'maestro', 'materialesDetalle.material', 'encargado', 'materia']);
-            $prestamo->materiales_detalle = $prestamo->materialesDetalle
-                ->filter(fn($d) => $d->material !== null)
-                ->map(fn($d) => [
-                    'id' => $d->material->id,
-                    'codigo' => $d->material->codigo,
-                    'nombre' => $d->material->nombre,
-                ])
-                ->values();
-
+        if ($materialesInvalidos->isNotEmpty()) {
+            $nombres = $materialesInvalidos->pluck('nombre')->implode(', ');
             return response()->json([
-                'message' => 'Registro guardado correctamente',
-                'data' => $prestamo,
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Error al registrar préstamo: '.$e->getMessage());
-            return response()->json([
-                'message' => 'Ocurrió un error inesperado',
-                'error' => $e->getMessage(), 
-            ], 500);
+                'message' => "Los siguientes materiales no pertenecen al laboratorio seleccionado: $nombres"
+            ], 422);
         }
+
+        // Registrar el préstamo
+        $prestamo = Prestamo::create([
+            'fecha_prestamo' => now()->format('Y-m-d H:i:s'),
+            'fecha_devolucion' => $request->fecha_devolucion,
+            'practica' => $request->practica,
+            'id_estudiante' => $estudiante->id,
+            'id_maestro' => $maestro->id,
+            'id_encargado' => $encargadoId,
+            'id_materia' => $materia->id,
+            'id_laboratorio' => $laboratorio->id,
+        ]);
+
+        foreach ($materiales as $material) {
+            DetallePrestamo::create([
+                'prestamo_id' => $prestamo->id,
+                'material_id' => $material->id,
+            ]);
+        }
+
+        // Cargar relaciones y retornar respuesta
+        $prestamo->load(['estudiante', 'maestro', 'materialesDetalle.material', 'encargado', 'materia', 'laboratorio']);
+
+        $prestamo->materiales_detalle = $prestamo->materialesDetalle
+            ->filter(fn($d) => $d->material !== null)
+            ->map(fn($d) => [
+                'id' => $d->material->id,
+                'codigo' => $d->material->codigo,
+                'nombre' => $d->material->nombre,
+            ])
+            ->values();
+
+        return response()->json([
+            'message' => 'Registro guardado correctamente',
+            'data' => $prestamo,
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Error al registrar préstamo: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Ocurrió un error inesperado',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
+
 
     public function update(Request $request, $id)
     {
@@ -122,16 +141,19 @@ class PrestamoController extends Controller
                 'numero_control' => 'required|exists:estudiantes,numero_control',
                 'rfc' => 'required|exists:maestros,rfc',
                 'id_materia' => 'required|exists:materias,id',
+                'id_laboratorio' => 'required|exists:laboratorios,id',
             ]);
 
             $estudiante = Estudiantes::where('numero_control', $request->numero_control)->first();
             $maestro = Maestro::where('rfc', $request->rfc)->first();
             $materia = Materia::findOrFail($request->id_materia);
+            $laboratorio = Laboratorio::findOrFail($request->id_laboratorio);
 
             $request->merge([
                 'id_estudiante' => $estudiante->id,
                 'id_maestro' => $maestro->id,
                 'id_materia' => $materia->id,
+                'id_laboratorio' => $laboratorio->id,
                 'materiales' => $request->input('materiales', []),
             ]);
 
@@ -143,17 +165,20 @@ class PrestamoController extends Controller
                 'id_materia' => 'required|exists:materias,id',
                 'materiales' => 'required|array|min:1',
                 'materiales.*' => 'string|exists:materials,codigo',
+                'id_laboratorio' => 'required|exists:laboratorios,id',
             ]);
 
             $prestamo = Prestamo::findOrFail($id);
             $prestamo->update(collect($validatedData)->except('materiales')->toArray());
-
+            
+            $materialesActuales = $prestamo->materiales()->pluck('codigo')->toArray();
+            $materialesNuevos = $request->materiales;
             
             $materialIds = Material::whereIn('codigo', $request->materiales)->pluck('id');
             $materialIds = Material::whereIn('codigo', $request->materiales)->pluck('id');
             $prestamo->materiales()->sync($materialIds);
             
-            $prestamo->load(['estudiante', 'maestro', 'materialesDetalle.material', 'encargado', 'materia']);
+            $prestamo->load(['estudiante', 'maestro', 'materialesDetalle.material', 'encargado', 'materia','laboratorio']);
             $prestamo->materiales_detalle = $prestamo->materialesDetalle
                 ->filter(fn($d) => $d->material !== null)
                 ->map(fn($d) => [

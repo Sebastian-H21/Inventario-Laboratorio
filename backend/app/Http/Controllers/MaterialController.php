@@ -6,6 +6,7 @@ use App\Models\Material;
 use App\Models\Categoria;
 use App\Models\Marca;
 use App\Models\Ubicacion;
+use App\Models\Laboratorio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades;
 
@@ -17,10 +18,10 @@ class MaterialController extends Controller
             $verArchivados = $request->query('verArchivados') === 'true';
             if ($verArchivados) {
                 $materials = Material::onlyTrashed()
-                    ->with(['categoria:id,nombre', 'marca:id,nombre', 'ubicacion:id,nombre'])
+                    ->with(['categoria:id,nombre', 'marca:id,nombre', 'ubicacion:id,nombre','laboratorio:id,nombre'])
                     ->get();
             } else {
-                $materials = Material::with(['categoria:id,nombre', 'marca:id,nombre', 'ubicacion:id,nombre'])
+                $materials = Material::with(['categoria:id,nombre', 'marca:id,nombre', 'ubicacion:id,nombre','laboratorio:id,nombre'])
                     ->get();
             }
             return response()->json($materials);
@@ -42,11 +43,12 @@ class MaterialController extends Controller
                 'id_marca' => 'required|exists:marcas,id',
                 'id_categoria' => 'required|exists:categorias,id',
                 'id_ubicacion' => 'required|exists:ubicacions,id',
+                'id_laboratorio' => 'required|exists:laboratorios,id',
             ]);
 
             $validatedData['observaciones'] = $validatedData['observaciones'] ?? 'Sin observaciones';
             $registro = Material::create($validatedData);
-            $registro->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre');
+            $registro->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre','laboratorio:id,nombre');
             return response()->json([
                 'message' => 'Registro guardado correctamente',
                 'data' => $registro
@@ -76,13 +78,14 @@ class MaterialController extends Controller
                 'id_marca' => 'required|exists:marcas,id',
                 'id_categoria' => 'required|exists:categorias,id',
                 'id_ubicacion' => 'required|exists:ubicacions,id',
+                'id_laboratorio' => 'required|exists:laboratorios,id',
             ]);
             
             $validatedData['observaciones'] = $validatedData['observaciones'] ?? 'Sin observaciones';
             $material = Material::findOrFail($id);
             $material->update($validatedData);
 
-            $material->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre');
+            $material->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre','laboratorio:id,nombre');
 
             return response()->json([
                 'message' => 'Material actualizado correctamente',
