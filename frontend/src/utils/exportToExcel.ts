@@ -34,6 +34,7 @@ export const formatPrestamosForXLS = (
                 : '',
             Materia: p.materia?.nombre ?? '',
             Práctica: p.practica,
+            Laboratorio: p.laboratorio?.nombre ?? '',
             Materiales: p.materiales_detalle?.map(m => m.material?.codigo).join(', ') ?? '',
         };
 
@@ -57,13 +58,16 @@ export const formatPrestamosForXLS = (
             Cantidad: m.cantidad,
             Observaciones: m.observaciones,
             Categoria: m.categoria
-                ? `${m.categoria.nombre},`
+                ? `${m.categoria.nombre}`
                 : '',
             Marca: m.marca
-                ? `${m.marca.nombre},`
+                ? `${m.marca.nombre}`
                 : '',            
             Ubicación: m.ubicacion
-                ? `${m.ubicacion.nombre},`
+                ? `${m.ubicacion.nombre}`
+                : '', 
+            Laboratorio: m.laboratorio
+                ? `${m.laboratorio.nombre}`
                 : '', 
         }))
     }
