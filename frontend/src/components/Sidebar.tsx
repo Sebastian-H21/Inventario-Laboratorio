@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
-import "tailwindcss";
 import { toast } from "react-toastify";
 import ModoOscuro from "./ModoOscuro";
 
 const Sidebar = () => {
-    const [open, setOpen] = useState(false);
+    const [fijarSidebar, setFijarSidebar] = useState(() => {
+        return localStorage.getItem("sidebarFijada") === "true";
+    });
+
+    const [open, setOpen] = useState(fijarSidebar);
     const navigate = useNavigate();
     const [isAdmin, setIsAdmin] = useState(false);
     const [userName, setUserName] = useState("");
@@ -21,55 +24,67 @@ const Sidebar = () => {
             } catch (error) {
                 console.error("Error al parsear el usuario:", error);
             }
-        } else {
-            console.warn("No se encontró información válida del usuario en localStorage.");
         }
     }, []);
 
-    const Menus = [
-        { title: "Inicio", src: "home", path: "/inicio" },
-        { title: "Materiales", src: "osc", path: "/materiales" },
-        { title: "Prestamos", src: "prestamo", path: "/prestamos" },
-        { title: "Estudiantes", src: "estudiante", path: "/estudiantes", gap: true },
-        { title: "Maestros", src: "maestro", path: "/maestros" },
-        ...(isAdmin
-        ? [{ title: "Encargados", src: "user", path: "/encargados" }]
-        : [{ title: "Mi perfil", src: "user", path: "/perfil" }]
-        ),
-        { title: "Materia", src: "materia", path: "/materias" },
-        { title: "Marca", src: "marca", path: "/marcas", gap: true },
-        { title: "categoria", src: "categoria", path: "/categorias" },
-        { title: "ubicacion", src: "ubicacion", path: "/ubicacion" },
-        { title: "Cerrar sesión", src: "logout", path: "/", logout: true }
-    ];
     const handleLogout = () => {
         logout(navigate);
         toast.success("Sesión cerrada con éxito");
     };
+
+    const toggleFijarSidebar = () => {
+        const nuevaFijacion = !fijarSidebar;
+        setFijarSidebar(nuevaFijacion);
+        localStorage.setItem("sidebarFijada", nuevaFijacion.toString());
+        setOpen(nuevaFijacion);
+    };
+
+    const Menus = [
+        { title: "Inicio", src: "home", path: "/inicio" },
+        { title: "Materiales", src: "osc", path: "/materiales" },
+        { title: "Prestamos", src: "prestamo", path: "/prestamos"},
+        { title: "Estudiantes", src: "estudiante", path: "/estudiantes", },
+        { title: "Maestros", src: "maestro", path: "/maestros" },
+        ...(isAdmin
+            ? [{ title: "Encargados", src: "user", path: "/encargados" }]
+            : [{ title: "Mi perfil", src: "user", path: "/perfil" }]
+        ),
+        { title: "Materia", src: "materia", path: "/materias" },
+        { title: "Marca", src: "marca", path: "/marcas",  },
+        { title: "Categoría", src: "categoria", path: "/categorias" },
+        { title: "Ubicación", src: "ubicacion", path: "/ubicacion" },
+        { title: "Laboratorio", src: "labo", path: "/laboratorios" },
+        { title: "Cerrar sesión", src: "logout", path: "/", logout: true }
+    ];
+
     return (
         <div className="flex">
-            <div className={`${open ? "w-72" : "w-20"} bg-white dark:bg-gray-900 h-screen p-5 pt-8 relative duration-300`}>
+            <div className={`${open ? "w-72" : "w-20" } bg-white dark:bg-gray-900 h-screen p-5 pt-8 relative duration-300`}>
+                {/* Botón de Toggle (ícono menú) */}
                 <img
                     src="./src/assets/menu.png"
                     className={`absolute cursor-pointer -right-3 top-9 w-7 border-dark-purple 
                     border-2 rounded-full ${!open && "rotate-180"}`}
                     onClick={() => setOpen(!open)}
                 />
+                {/* Logo */}
                 <div className="flex gap-x-4 items-center">
                     <img
                         src="./src/assets/logo.png"
-                        className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"}`}
+                        className={`cursor-pointer duration-500`} // rotar logo itpa ${open && "rotate-[360deg]"}
                         onClick={() => setOpen(!open)}
                     />
                 </div>
+                {/* Nombre del usuario */}
                 {open && (
                     <div className="mt-4 text-sm text-gray-700 dark:text-white">
                         Bienvenido, <span className="font-semibold">{userName}</span>
                     </div>
                 )}
+                {/* Menú */}
                 <ul className="pt-6">
                     {Menus.map((Menu, index) => (
-                        <li key={index} className={`${Menu.gap ? "mt-9" : "mt-2"}`}>
+                        <li key={index} className={`${Menu.gap ? "mt-9" : "mt-1"}`}>
                             {Menu.logout ? (
                                 <button
                                     onClick={handleLogout}
@@ -97,6 +112,29 @@ const Sidebar = () => {
                         </li>
                     ))}
                 </ul>
+                <li className="mt-4 relative group">
+                    <button
+                        onClick={toggleFijarSidebar}
+                        aria-label={fijarSidebar ? "Bloquear Sidebar" : "Desbloquear Sidebar"}
+                        className="flex items-center gap-x-4 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm text-black dark:text-white w-full"
+                    >
+                        <img
+                            src={`./src/assets/${fijarSidebar ? "candadoa" : "candadoc"}.png`}
+                            alt={fijarSidebar ? "Desbloquear Sidebar" : "Bloquear Sidebar"}
+                            className="w-5 h-5"
+                        />
+                        <span className={`${!open && "hidden"} origin-left duration-300`}>
+                            {fijarSidebar ? "Bloquear Sidebar" : "Desbloquear Sidebar"}
+                        </span>
+                    </button>
+
+                    {/* Tooltip para vista colapsada */}
+                    {!open && (
+                        <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 whitespace-nowrap bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            {fijarSidebar ? "Bloquear Sidebar" : "Desbloquear Sidebar"}
+                        </div>
+                    )}
+                </li>
             </div>
             <ModoOscuro />
         </div>
@@ -104,7 +142,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
-
-
-// quitar esppaciado entre materiales y estudiantes sustituir linea 45 ${index !== 1 && "mt-2"}
