@@ -73,9 +73,6 @@ interface Params {
                     toast.error(`Ya existe un ubicación archivada con el nombre "${ubicacion.nombre}". Por favor, restaúralo.`);
                     return;
                 }
-
-
-
             const nombreDuplicado = data.some((item) =>
             item.nombre === ubicacion.nombre &&
             (!isEdit || item.id !== ubicacion.id));
