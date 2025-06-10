@@ -24,6 +24,7 @@ const ViewPrestamo: React.FC = () => {
         handleSubmit,
         materias,
         maestros,
+        laboratorios,
         handleExportFiltrado,
         } = usePrestamosHandlers({
         setData,
@@ -51,9 +52,11 @@ const ViewPrestamo: React.FC = () => {
 
         return `${year}-${month}-${day}T${hours}:${minutes}`;
         };
-
+        const esPrestamoConFechaPasada = (fechaDevolucion: string): boolean => {
+        return new Date(fechaDevolucion) < new Date();
+        };
     const columns: ColumnDef<Prestamo>[] = [
-    { accessorKey: "id", header: "ID" },
+   // { accessorKey: "id", header: "ID" },
     { accessorKey: "fecha_prestamo", header: "Fecha Préstamo",cell: ({ row }) => formatDateTime(row.original.fecha_prestamo) },
     { accessorKey: "fecha_devolucion", header: "Fecha Devolución" ,cell: ({ row }) => formatDateTime(row.original.fecha_devolucion)},
     {
@@ -92,11 +95,19 @@ const ViewPrestamo: React.FC = () => {
         header: "Materia",
         accessorFn: row =>
             row.materia
-                ? `${row.materia.id}: ${row.materia.nombre}`
+                ? `${row.materia.nombre}`
                 : "Sin datos",
         cell: info => info.getValue(),
     },
     { accessorKey: "practica", header: "Práctica" },
+    {
+        header: "Laboratorio",
+        accessorFn: row =>
+            row.laboratorio
+                ? `${row.laboratorio.nombre}`
+                : "Sin datos",
+        cell: info => info.getValue(),
+    },
     ...(verArchivados
         ? [{
             accessorKey: "deleted_at",
@@ -112,12 +123,16 @@ const ViewPrestamo: React.FC = () => {
                 const prestamo = row.original;
                 return (
                     <div className="flex gap-2">
-                        <button
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
-                            onClick={() => handleEdit(prestamo)}
-                        >
-                            Editar
-                        </button>
+                        {esPrestamoConFechaPasada(prestamo.fecha_devolucion) ? (
+                            <span className="text-gray-400 italic">No editable</span>
+                            ) : (
+                            <button
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                                onClick={() => handleEdit(prestamo)}
+                            >
+                                Editar
+                            </button>
+		                )}
                         <button
                             className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
                             onClick={() => handleDelete(prestamo.id)}
@@ -149,6 +164,13 @@ const ViewPrestamo: React.FC = () => {
             options: maestros.map(m => ({
                 value: m.rfc,
                 label: `${m.rfc} (${m.nombre} ${m.apellido})`
+                }))
+                
+        },
+        { name: "id_laboratorio", label: "Laboratorio", type: "select", required: true,
+            options: laboratorios.map(l => ({
+                value: l.id,
+                label: `${l.id} (${l.nombre})`
                 }))
                 
         },
@@ -217,7 +239,8 @@ const ViewPrestamo: React.FC = () => {
                         onClose={() => setIsExportModalOpen(false)}
                         onExport={handleExportFiltrado}
                         mostrarFechas={true}
-                        recurso="Préstamos"
+                        recurso="prestamos"
+                        laboratorios={laboratorios}
                     />
             </div>
         </div> 
