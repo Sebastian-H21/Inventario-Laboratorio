@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('id_marca')->constrained('marcas');
             $table->foreignId('id_categoria')->constrained('categorias');
             $table->foreignId('id_ubicacion')->constrained('ubicacions');
+            $table->foreignId('id_laboratorio')->constrained('laboratorios');
 
             $table->timestamps();
             $table->softDeletes();

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('id_maestro')->constrained('maestros');
             $table->foreignId('id_encargado')->constrained('encargados');
             $table->foreignId('id_materia')->constrained('materias');
+            $table->foreignId('id_laboratorio')->constrained('laboratorios');
             
             $table->softDeletes();
             $table->timestamps();
