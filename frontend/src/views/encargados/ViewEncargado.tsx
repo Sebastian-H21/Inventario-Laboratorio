@@ -36,7 +36,7 @@ const ViewEncargados: React.FC = () => {
         { accessorKey: "apellido", header: "Apellidos" },
         { accessorKey: "password",header: "Contraseña",cell: () => "********",
         },
-        { accessorKey: "is_admin",header: "Rol"},
+        //{ accessorKey: "is_admin",header: "Rol"},
         {
             header: "Acciones",
             cell: ({ row }) => {
