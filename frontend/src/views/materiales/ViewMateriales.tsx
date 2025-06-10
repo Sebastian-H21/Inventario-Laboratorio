@@ -24,6 +24,7 @@ const ViewMateriales: React.FC = () => {
     marcas,
     categorias,
     ubicaciones,
+    laboratorios,
     handleExportMateriales
     } = useMaterialesHandlers({
         data,
@@ -51,6 +52,10 @@ const ViewMateriales: React.FC = () => {
         accessorFn: (row) => row.ubicacion?.nombre || "Sin ubicación"
         },
         { accessorKey: "observaciones", header: "Comentarios" },
+        {
+        header: "Laboratorio",
+        accessorFn: (row) => row.laboratorio?.nombre || "Sin datos"
+        },
         {
             header: "Acciones",
             cell: ({ row }) => {
@@ -104,6 +109,12 @@ const ViewMateriales: React.FC = () => {
             options: ubicaciones.map(u => ({
                 value: u.id,
                 label: `${u.id} (${u.nombre})`
+                }))
+        },
+        {name: "id_laboratorio",label: "Laboratorio",type: "select",required: true,
+            options: laboratorios.map(l => ({
+                value: l.id,
+                label: `${l.id} (${l.nombre})`
                 }))
         },
     ]
@@ -174,12 +185,13 @@ const ViewMateriales: React.FC = () => {
             />
 
             <ModalExportar
-            key={isExportModalOpen ? "open" : "closed"} 
-            isOpen={isExportModalOpen}
-            onClose={() => setIsExportModalOpen(false)}
-            onExport={handleExportMateriales}
-            mostrarFechas={false}
-            recurso="Materiales"
+                key={isExportModalOpen ? "open" : "closed"} 
+                isOpen={isExportModalOpen}
+                onClose={() => setIsExportModalOpen(false)}
+                onExport={handleExportMateriales}
+                mostrarFechas={false}
+                recurso="materiales"
+                laboratorios={laboratorios}
             />
         </div>
         </div>
