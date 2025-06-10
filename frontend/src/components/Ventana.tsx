@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../utils/api";
+import { toast } from "react-toastify";
 
 interface ModalFormProps {
     isOpen: boolean;
@@ -24,7 +25,6 @@ interface ModalFormProps {
         
     }[];
 }
-
     const ModalForm: React.FC<ModalFormProps> = ({
         isOpen,
         onClose,
@@ -32,8 +32,9 @@ interface ModalFormProps {
         initialData,
         fields
     }) => {
-
+    const inputCodigoRef = useRef<HTMLInputElement>(null);
     const [formData, setFormData] = useState(initialData || {})
+    
 
     useEffect(() => {
     if (initialData) {
@@ -46,7 +47,12 @@ interface ModalFormProps {
         setFormData(initialValues);
     }
     }, [initialData, fields]);
-    
+    useEffect(() => {
+        if (!initialData && materialesSeleccionados.length > 0) {
+            setMaterialesSeleccionados([]);
+            toast("Se cambió el laboratorio. La lista de materiales ha sido limpiada.");
+        }
+    }, [formData.id_laboratorio]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -55,20 +61,41 @@ interface ModalFormProps {
 
     const [materialCodigo, setMaterialCodigo] = useState("");
     const [materialesSeleccionados, setMaterialesSeleccionados] = useState<string[]>( []);
+
     const handleAgregarMaterial = () => {
         const codigo = materialCodigo.trim();
         if (!codigo) return;
+
         if (materialesSeleccionados.includes(codigo)) {
-            alert("Este material ya fue agregado.");
+            toast("Este material ya fue agregado.");
+            setMaterialCodigo(""); 
+            inputCodigoRef.current?.focus();
             return;
         }
-    if (!materialesDisponiblesData.some(m => m.codigo === codigo)) {
-        alert("El código ingresado no es válido.");
+
+    const materialEncontrado = materialesDisponiblesData.find(m => m.codigo === codigo);
+
+    if (!materialEncontrado) {
+        toast("El código ingresado no es válido.");
+        setMaterialCodigo(""); 
+        inputCodigoRef.current?.focus();
         return;
     }
-        setMaterialesSeleccionados(prev => [...prev, codigo]);
-        setMaterialCodigo("");
-    };
+
+    const laboratorioSeleccionado = Number(formData.id_laboratorio);
+    if (materialEncontrado.id_laboratorio !== laboratorioSeleccionado) {
+        toast("El material no pertenece al laboratorio seleccionado.");
+        setMaterialCodigo(""); 
+        inputCodigoRef.current?.focus();
+        return;
+    }
+
+    setMaterialesSeleccionados(prev => [...prev, codigo]);
+    setMaterialCodigo("");
+    inputCodigoRef.current?.focus();
+};
+
+
     const handleEliminarMaterial = (codigo: string) => {
         setMaterialesSeleccionados(prev => prev.filter(c => c !== codigo));
     };
@@ -105,7 +132,12 @@ interface ModalFormProps {
         fetchEstudiantes();
     }, []);
 
-    const [materialesDisponiblesData, setMaterialesDisponiblesData] = useState<{ codigo: string, nombre: string }[]>([]);
+    const [materialesDisponiblesData, setMaterialesDisponiblesData] = useState<{
+        codigo: string;
+        nombre: string;
+        id_laboratorio: number;
+        }[]>([]);
+
     useEffect(() => {
         const fetchMateriales = async () => {
             try {
@@ -123,8 +155,7 @@ interface ModalFormProps {
     useEffect(() => {
         setMaterialesSeleccionados(initialData?.materiales || []);
     }, [initialData]);
-if (!isOpen) return null;
-
+    if (!isOpen) return null;
 return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div className="bg-white p-6 rounded-lg shadow-md w-96">
@@ -135,6 +166,7 @@ return (
                 {fields
                 .filter((field) => {
                     if (field.name === "fecha_devolucion" && initialData) return false;
+                    if (field.name === "id_laboratorio" && initialData) return false; // campo de id laboratorio no disponible para editar 
                     return true;
                 })
                 .map((field) => (
@@ -146,6 +178,7 @@ return (
                     <div className="mb-4">
                         <div className="flex gap-2">
                         <input
+                            ref={inputCodigoRef} 
                             type="text"
                             value={materialCodigo}
                             onChange={(e) => setMaterialCodigo(e.target.value)}
@@ -199,6 +232,7 @@ return (
                         onChange={handleChange}
                         required={field.required}
                         className="w-full p-2 border rounded-md"
+                        
                     >
                         <option value="">Seleccione una opción</option>
                         {field.options?.map((option) => (
