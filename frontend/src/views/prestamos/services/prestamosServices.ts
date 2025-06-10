@@ -23,7 +23,8 @@ export const saveOrUpdatePrestamo = async (prestamo: Prestamo, isEdit: boolean) 
         rfc: prestamo.rfc,
         materiales: prestamo.materiales,
         practica: prestamo.practica,
-        id_materia: prestamo.id_materia,  
+        id_materia: prestamo.id_materia,
+        id_laboratorio: prestamo.id_laboratorio,    
     };
 
     try {
