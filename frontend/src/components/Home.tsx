@@ -23,7 +23,7 @@ const Home = () => {
 
     return (
         <div className="relative w-full bg-white dark:bg-gray-800">
-        <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
+        <div className="relative h-56 overflow-hidden rounded-lg md:h-90 ">
             {images.map((img, index) => (
             <div
                 key={index}
@@ -34,7 +34,7 @@ const Home = () => {
                 <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover" 
                 />
             </div>
             ))}
