@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { Prestamo, Material } from "../../../types";
+import { Prestamo, Material, } from "../../../types";
 import { deletePrestamo, saveOrUpdatePrestamo } from "../services/prestamosServices";
 import api from "../../../utils/api";
 import { Dispatch, SetStateAction } from "react";
@@ -24,6 +24,7 @@ export const usePrestamosHandlers = ({
     const [maestros, setMaestros] = useState<{ rfc: string; nombre: string; apellido: string }[]>([]);
     const [materias, setMaterias] = useState<{ id: number; nombre: string }[]>([]);
     const [materiales, setMateriales] = useState<Material[]>([]);
+    const [laboratorios, setLaboratorios] = useState<{ id: number; nombre: string }[]>([]);
 
     useEffect(() => {
         const fetchMaestros = async () => {
@@ -49,6 +50,18 @@ export const usePrestamosHandlers = ({
         fetchMaterias();
     }, []);
 
+        useEffect(() => {
+        const fetchLaboratorios = async () => {
+            try {
+                const response = await api.get("/laboratorios");
+                setLaboratorios(response.data);
+            } catch (error) {
+                console.error("Error al obtener los laboratorios:", error);
+            }
+        };
+        fetchLaboratorios();
+    }, []);
+
     useEffect(() => {
         const fetchMateriales = async () => {
             try {
@@ -70,6 +83,7 @@ export const usePrestamosHandlers = ({
             id_estudiante: prestamo.id_estudiante,
             id_maestro: prestamo.id_maestro,
             id_materia: prestamo.id_materia,
+            id_laboratorio: prestamo.id_laboratorio,
             materiales: prestamo.materiales_detalle?.map((d) => d.material?.codigo) || [],
             numero_control: prestamo.estudiante?.numero_control ?? "",
             rfc: prestamo.maestro?.rfc ?? "",
@@ -77,6 +91,7 @@ export const usePrestamosHandlers = ({
             estudiante: prestamo.estudiante,
             maestro: prestamo.maestro,
             materia: prestamo.materia,
+            laboratorio: prestamo.laboratorio
         });
         console.log("Préstamo al editar:", prestamo);
         setIsModalOpen(true);
@@ -153,8 +168,9 @@ const handleSubmit = async (prestamo: Prestamo) => {
             toast.error(`Los siguientes códigos están repetidos: ${[...new Set(codigosDuplicados)].join(", ")}`);
             return;
         }
-
+        
         const isEdit = !!editingPrestamo;
+
         const response = await saveOrUpdatePrestamo(prestamo, isEdit);
 
         setData((prev) =>
@@ -174,77 +190,100 @@ const handleSubmit = async (prestamo: Prestamo) => {
 
 
     const handleExportFiltrado = async ({
+        
         tipo,
         fechaInicio,
         fechaFin,
+        laboratorioId,
     }: {
         tipo: "activos" | "completados";
         fechaInicio?: Date;
         fechaFin?: Date;
+        laboratorioId?: number;
     }) => {
         try {
-            const response = await api.get(`/prestamos`, {
+            const response = await api.get("/prestamos", {
                 params: {
                     verArchivados: tipo === "completados",
                 },
             });
+            const prestamos: any[] = response.data;
+            const filtrarPorLaboratorio = (p: any) => {
+                if (!laboratorioId) {
+                    console.warn("⚠️ laboratorioId no definido, omitiendo filtro por laboratorio.");
+                    return true; 
+                }
+                const idPrestamoLab = p.laboratorio?.id ?? p.id_laboratorio;
+                const match = Number(idPrestamoLab) === Number(laboratorioId);
+                console.log(`🔎 Evaluando préstamo ID ${p.id}`, {
+                    laboratorioPrestamo: p.laboratorio?.nombre ?? 'NO ASIGNADO',
+                    idPrestamoLab,
+                    laboratorioSeleccionadoId: laboratorioId,
+                    match,
+                });
+                return match;
+            };
 
-            const prestamos = response.data;
-            const ahora = new Date();
+            // Formatear nombre
+            const laboratorioNombre = laboratorioId
+                ? laboratorios.find(lab => lab.id === laboratorioId)?.nombre ?? `lab_${laboratorioId}`
+                : "todos_labs";
 
-            // Validaciones para tipo "completados"
+            // QUitar acentos y dejar en minusculas 
+            const limpiarNombre = (nombre: string) =>
+                nombre.normalize("NFD") 
+                    .replace(/[\u0300-\u036f]/g, "") 
+                    .replace(/[^a-z0-9]/gi, "_") 
+                        .toLowerCase();
+            const labNombreLimpio = limpiarNombre(laboratorioNombre);
+            
+            
+            const formatDate = (d: Date) => {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}-${month}-${year}`;
+            };
             if (tipo === "completados") {
                 if (!fechaInicio || !fechaFin) {
                     toast.error("Debes seleccionar ambas fechas para exportar préstamos completados.");
                     return;
                 }
-
                 if (fechaInicio > fechaFin) {
                     toast.error("La fecha de inicio no puede ser mayor a la fecha de fin.");
                     return;
                 }
-
-                // Normalizar fechas para cubrir todo el día
-                const fechaInicioNormalizada = new Date(fechaInicio);
-                fechaInicioNormalizada.setHours(0, 0, 0, 0);
-
-                const fechaFinNormalizada = new Date(fechaFin);
-                fechaFinNormalizada.setHours(23, 59, 59, 999);
-
-                const prestamosFiltrados = prestamos.filter((p: any) => {
-                    if (tipo === "completados") {
-                        const fechaDevolucionReal = new Date(p.deleted_at);
-                        const enRango = fechaDevolucionReal >= fechaInicioNormalizada && fechaDevolucionReal <= fechaFinNormalizada;
-                        return !!p.deleted_at && enRango;
-                    } else {
-                        const fechaDevolucion = new Date(p.fecha_devolucion);
-                        return !p.deleted_at && fechaDevolucion >= ahora;
-                    }
+                const inicio = new Date(fechaInicio);
+                inicio.setHours(0, 0, 0, 0);
+                const fin = new Date(fechaFin);
+                fin.setHours(23, 59, 59, 999);
+                const prestamosFiltrados = prestamos.filter((p) => {
+                    if (!p.deleted_at) return false;
+                    const fechaDev = new Date(p.deleted_at);
+                    return (
+                        fechaDev >= inicio &&
+                        fechaDev <= fin &&
+                        filtrarPorLaboratorio(p)
+                    );
                 });
                 if (prestamosFiltrados.length === 0) {
                     toast.info("No se encontraron préstamos para exportar.");
                     return;
                 }
-
                 const dataFormateada = formatPrestamosForXLS(prestamosFiltrados, tipo);
-                const formatDate = (d: Date) => d.toISOString().slice(0, 10);
-                const nombreArchivo = `prestamos_${tipo}_${formatDate(fechaInicio)}_a_${formatDate(fechaFin)}`;
-
+                const nombreArchivo = `prestamos_completados_${labNombreLimpio}_${formatDate(fechaInicio)}_a_${formatDate(fechaFin)}`;
                 exportToExcel(dataFormateada, nombreArchivo);
                 toast.success("Exportación realizada con éxito.");
             } else {
-                // Exportación de préstamos activos
-                const prestamosFiltrados = prestamos.filter((p: any) => !p.deleted_at);
-
+                const prestamosFiltrados = prestamos.filter(
+                    (p) => !p.deleted_at && filtrarPorLaboratorio(p)
+                );
                 if (prestamosFiltrados.length === 0) {
                     toast.info("No se encontraron préstamos para exportar.");
                     return;
                 }
-
                 const dataFormateada = formatPrestamosForXLS(prestamosFiltrados, tipo);
-                const formatDate = (d: Date) => d.toISOString().slice(0, 10);
-                const nombreArchivo = `prestamos_${tipo}_${formatDate(new Date())}`;
-
+                const nombreArchivo = `prestamos_activos_${labNombreLimpio}_${formatDate(new Date())}`;
                 exportToExcel(dataFormateada, nombreArchivo);
                 toast.success("Exportación realizada con éxito.");
             }
@@ -263,6 +302,7 @@ const handleSubmit = async (prestamo: Prestamo) => {
         maestros,
         materiales,
         materias,
+        laboratorios,
         handleExportFiltrado,
     };
 };
