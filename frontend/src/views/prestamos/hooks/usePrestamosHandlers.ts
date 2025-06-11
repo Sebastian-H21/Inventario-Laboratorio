@@ -250,7 +250,7 @@ const handleSubmit = async (prestamo: Prestamo) => {
                     return;
                 }
                 if (fechaInicio > fechaFin) {
-                    toast.error("La fecha de inicio no puede ser mayor a la fecha de fin.");
+                    toast.error("La fecha de inicio no puede ser despues de la fecha de fin.");
                     return;
                 }
                 const inicio = new Date(fechaInicio);
