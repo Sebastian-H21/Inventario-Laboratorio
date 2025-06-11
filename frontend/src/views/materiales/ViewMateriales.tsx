@@ -89,7 +89,6 @@ const ViewMateriales: React.FC = () => {
     ];
 
     const fields = [
-        { name: "codigo", label: "Código", type: "text", placeholder: "Ingrese el codigo", minLength: 10, maxLength: 10,required: true, pattern: "^[0-9]{10}$",autoFocus: true},
         { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del material",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
         { name: "cantidad", label: "Cantidad", type: "number", placeholder: "Ingrese la cantidad",required: true,min: 1, max: 200 },
         { name: "observaciones", label: "Comentarios", type: "text", placeholder: "Comentario (opcional)",maxLength: 50,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
@@ -99,7 +98,7 @@ const ViewMateriales: React.FC = () => {
                 label: `${m.id} (${m.nombre})`
                 })),
         },
-        {name: "modelo", label: "Modelo", type: "text", placeholder: "Ingrese el modelo del material",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s-_]*$"},
+        {name: "modelo", label: "Modelo", type: "text", placeholder: "Ingrese el modelo del material",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s\\-_]*$"},
 
         {name: "id_categoria",label: "Categoría",type: "select",required: true,
             options: categorias.map(c => ({
