@@ -246,5 +246,5 @@ const ViewPrestamo: React.FC = () => {
         </div> 
     );
 };
-
+//.
 export default ViewPrestamo;
