@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../utils/api";
 import { toast } from "react-toastify";
+import { generarCodigoMaterial } from "../utils/generarCodigoMaterial";
 
 interface ModalFormProps {
     isOpen: boolean;
@@ -22,7 +23,6 @@ interface ModalFormProps {
         title?: string;
         autoFocus?: boolean;
         defaultValue: string;
-        
     }[];
 }
     const ModalForm: React.FC<ModalFormProps> = ({
@@ -155,7 +155,49 @@ interface ModalFormProps {
     useEffect(() => {
         setMaterialesSeleccionados(initialData?.materiales || []);
     }, [initialData]);
-    if (!isOpen) return null;
+    
+    const [laboratorios, setLaboratorios] = useState<{ id: number; nombre: string }[]>([]);
+    useEffect(() => {
+    const fetchLaboratorios = async () => {
+        try {
+        const response = await api.get("/laboratorios");
+        setLaboratorios(response.data);
+        } catch (error) {
+        console.error("Error al obtener laboratorios:", error);
+        }
+    };
+    fetchLaboratorios();
+    }, []);
+
+    const obtenerUltimoNumeroPorLab = async (idLaboratorio: number) => {
+    try {
+        const response = await api.get(`/materials/ultimo-codigo/${idLaboratorio}`);
+        return response.data.ultimoNumero;
+    } catch (error) {
+        console.error("Error al obtener último número del material:", error);
+        return 1; 
+    }
+    }; 
+    useEffect(() => {
+    const generarYAsignarCodigo = async () => {
+        if (!initialData && formData.nombre && formData.id_laboratorio) {
+        const nombreLab = laboratorios.find(
+            (l) => l.id === Number(formData.id_laboratorio)
+        )?.nombre;
+        if (!nombreLab) return;
+
+        const ultimoNumero = await obtenerUltimoNumeroPorLab(
+            Number(formData.id_laboratorio)
+        );
+        const nuevoCodigo = generarCodigoMaterial(formData.nombre, nombreLab, ultimoNumero);
+        setFormData((prev) => ({ ...prev, codigo: nuevoCodigo }));
+        }
+    };
+    generarYAsignarCodigo();
+    }, [formData.nombre, formData.id_laboratorio, laboratorios]);
+
+if (!isOpen) return null;
+
 return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div className="bg-white p-6 rounded-lg shadow-md w-96">

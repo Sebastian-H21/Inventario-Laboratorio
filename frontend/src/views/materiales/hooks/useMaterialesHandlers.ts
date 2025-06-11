@@ -6,6 +6,7 @@ import { deleteMaterial, saveOrUpdateMaterial } from "../services/materialesServ
 import api from "../../../utils/api";
 import { Dispatch, SetStateAction } from "react";
 import { exportToExcel, formatMaterialesForXLS } from '../../../utils/exportToExcel'
+import { generarCodigoBarras } from "../../../utils/generarCodigoBarras";
 
 interface Params {
     data: Material[];
@@ -95,47 +96,53 @@ interface Params {
     };
 
     const handleSubmit = async (material: Material) => {
-        try {
-    
+    try {
         if (!material.observaciones || material.observaciones.trim() === "") {
             material.observaciones = "Sin observaciones";
         }
         const isEdit = !!editingMaterial;
         const materialArchivado = data.find(
-                (item) =>
-                    item.codigo === material.codigo &&
-                    item.deleted_at !== null &&
-                    (!isEdit || item.id !== material.id)
-                );
-                    
-                if (materialArchivado) {
-                    toast.error(`Ya existe un material archivado con el código "${material.codigo}". Por favor, restaúralo.`);
-                    return;
-                }
-        
+            (item) =>
+                item.codigo === material.codigo &&
+                item.deleted_at !== null &&
+                (!isEdit || item.id !== material.id)
+        );
+        if (materialArchivado) {
+            toast.error(`Ya existe un material archivado con el código "${material.codigo}". Por favor, restaúralo.`);
+            return;
+        }
         const codigoDuplicado = data.some(
             (item) =>
-            item.codigo === material.codigo &&
-            (!isEdit || item.id !== material.id)
+                item.codigo === material.codigo &&
+                (!isEdit || item.id !== material.id)
         );
-
         if (codigoDuplicado) {
             toast.error(`Ya existe un material con el código "${material.codigo}"`);
             return;
         }
         const response = await saveOrUpdateMaterial(material, isEdit);
         setData((prev) =>
-        isEdit ? prev.map((m) => (m.id === material.id ? response.data : m))
-            : [...prev, response.data]
+            isEdit
+                ? prev.map((m) => (m.id === material.id ? response.data : m))
+                : [...prev, response.data]
         );
-
         toast.success(isEdit ? "Material actualizado exitosamente" : "Material registrado exitosamente");
         setIsModalOpen(false);
-        } catch (error: any) {
+        const codigoGenerado = response?.data?.data?.codigo || response?.data?.codigo;
+        const nombreOriginal = editingMaterial?.nombre?.trim().toLowerCase();
+        const nombreNuevo = material.nombre?.trim().toLowerCase();
+        const nombreCambio = nombreOriginal !== nombreNuevo;
+        if (!isEdit || nombreCambio) {
+            if (codigoGenerado) {
+                generarCodigoBarras(codigoGenerado);
+            }
+        }
+    } catch (error: any) {
         console.error(error);
         toast.error(error?.response?.data?.message || "Ocurrió un error inesperado.");
-        }
-    };
+    }
+};
+
 
     const handleExportMateriales = async ({
         tipo,
@@ -151,7 +158,8 @@ interface Params {
 
             let materiales = response.data;
 
-            // Filtrar por laboratorio si se seleccionó uno
+            
+            
             if (laboratorioId) {
                 materiales = materiales.filter(
                     (m: any) => m.laboratorio?.id === laboratorioId
