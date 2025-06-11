@@ -4,7 +4,7 @@ import {
     getCoreRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    getFilteredRowModel, // Agregar para el filtrado
+    getFilteredRowModel, 
     ColumnDef,
     flexRender,
     SortingState,
