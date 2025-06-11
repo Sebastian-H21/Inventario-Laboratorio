@@ -174,7 +174,7 @@ const ViewPrestamo: React.FC = () => {
                 }))
                 
         },
-        { name: "materiales", label: "Código(s) de materiales", type: "custom", placeholder: "Ej. MAT-001", minLength: 0, maxLength: 0, required: true},
+        { name: "materiales", label: "Código(s) de materiales", type: "custom", placeholder: "Ej. OSC-ELE-001", minLength: 0, maxLength: 0, required: true},
 
     ];
 
