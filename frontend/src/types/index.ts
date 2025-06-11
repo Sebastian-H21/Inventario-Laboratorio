@@ -8,6 +8,7 @@ export interface Maestro {
 }
 
 export interface Material {
+    data: any;
     deleted_at: null;
     id: number;
     codigo: string;
