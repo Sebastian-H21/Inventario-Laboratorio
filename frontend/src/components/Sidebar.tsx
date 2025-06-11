@@ -41,8 +41,8 @@ const Sidebar = () => {
 
     const Menus = [
         { title: "Inicio", src: "home", path: "/inicio" },
-        { title: "Materiales", src: "osc", path: "/materiales" },
         { title: "Prestamos", src: "prestamo", path: "/prestamos"},
+        { title: "Materiales", src: "osc", path: "/materiales" },
         { title: "Estudiantes", src: "estudiante", path: "/estudiantes", },
         { title: "Maestros", src: "maestro", path: "/maestros" },
         ...(isAdmin
