@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('materials', function (Blueprint $table) {
             $table-> engine = 'innoDB';
             $table->id();
-            $table->string('codigo', 10)->unique(); 
+            $table->string('codigo', 20)->unique(); 
             $table->string('nombre', 30);
             $table->integer('cantidad');
             $table->string('observaciones', 50);
