@@ -34,6 +34,7 @@ Route::middleware('auth:encargado')->group(function () {
 
     Route::apiResource('materials', MaterialController::class);
     Route::post('/materials/{id}/restaurar', [MaterialController::class, 'restaurar']);
+    Route::get('/materials/ultimo-codigo/{id_laboratorio}', [MaterialController::class, 'obtenerUltimoNumeroPorLaboratorio']);
 
     Route::apiResource('prestamos', PrestamoController::class);
     Route::post('/prestamos/{id}/restaurar', [PrestamoController::class, 'restaurar']);
