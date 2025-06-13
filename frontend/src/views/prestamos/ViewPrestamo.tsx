@@ -2,18 +2,14 @@ import React, { useState} from "react";
 import Table from "../../components/Table";
 import ModalForm from "../../components/Ventana";
 import Sidebar from "../../components/Sidebar";
-import useFetchPrestamos from "./hooks/useFetchPrestamos";
+import {usePrestamos} from "./hooks/usePrestamos";
 import { ColumnDef } from "@tanstack/react-table";
 import { Prestamo } from "../../types";
 import { usePrestamosHandlers } from "./hooks/usePrestamosHandlers";
 import { ModalExportar } from "../../components/Exportar";
-
-
-
 const ViewPrestamo: React.FC = () => {
-
     const [verArchivados, setVerArchivados] = useState(false);
-    const { data, setData, loading } = useFetchPrestamos(verArchivados);
+    const { data= [], isLoading } = usePrestamos(verArchivados);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPrestamo, setEditingPrestamo] = useState<Prestamo | null>(null);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -26,159 +22,145 @@ const ViewPrestamo: React.FC = () => {
         maestros,
         laboratorios,
         handleExportFiltrado,
-        } = usePrestamosHandlers({
-        setData,
+    } = usePrestamosHandlers({
         setIsModalOpen,
         setEditingPrestamo,
         editingPrestamo,
-        prestamos: data, 
-        });
-        
+    });
         const formatDateTime = (dateStr?: string | null) => {
             if (!dateStr) return '';
             const date = new Date(dateStr);
             return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
         };
-
         const getDefaultFechaDevolucion = () => {
-        const now = new Date();
-        now.setHours(15, 0, 0, 0); 
-
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const day = String(now.getDate()).padStart(2, "0");
-        const hours = String(now.getHours()).padStart(2, "0");
-        const minutes = String(now.getMinutes()).padStart(2, "0");
-
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
+            const now = new Date();
+            now.setHours(15, 0, 0, 0); 
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            const hours = String(now.getHours()).padStart(2, "0");
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
         };
         const esPrestamoConFechaPasada = (fechaDevolucion: string): boolean => {
-        return new Date(fechaDevolucion) < new Date();
+            return new Date(fechaDevolucion) < new Date();
         };
     const columns: ColumnDef<Prestamo>[] = [
-   // { accessorKey: "id", header: "ID" },
-    { accessorKey: "fecha_prestamo", header: "Fecha Préstamo",cell: ({ row }) => formatDateTime(row.original.fecha_prestamo) },
-    { accessorKey: "fecha_devolucion", header: "Fecha Devolución" ,cell: ({ row }) => formatDateTime(row.original.fecha_devolucion)},
-    {
-        header: "Estudiante",
-        accessorFn: row =>
-            row.estudiante
-                ? `${row.estudiante.nombre} ${row.estudiante.apellido} (${row.estudiante.numero_control})`
-                : "Sin datos",
-        cell: info => info.getValue(),
-    },
-    {
-        header: "Maestro",
-        accessorFn: row =>
-            row.maestro
-                ? `${row.maestro.nombre} ${row.maestro.apellido} (${row.maestro.rfc})`
-                : "Sin datos",
-        cell: info => info.getValue(),
-    },
-    {
-        header: "Materiales",
-        accessorFn: row =>
-            row.materiales_detalle && row.materiales_detalle.length > 0
-                ? row.materiales_detalle.map(e => `${e.material?.nombre} (${e.material?.codigo})`).join(", ")
-                : "Sin datos",
-        cell: info => info.getValue(),
-    },
-    {
-        header: "Encargado",
-        accessorFn: row =>
-            row.encargado
-                ? `${row.encargado.id}: ${row.encargado.nombre} ${row.encargado.apellido}`
-                : "Sin datos",
-        cell: info => info.getValue(),
-    },
-    {
-        header: "Materia",
-        accessorFn: row =>
-            row.materia
-                ? `${row.materia.nombre}`
-                : "Sin datos",
-        cell: info => info.getValue(),
-    },
-    { accessorKey: "practica", header: "Práctica" },
-    {
-        header: "Laboratorio",
-        accessorFn: row =>
-            row.laboratorio
-                ? `${row.laboratorio.nombre}`
-                : "Sin datos",
-        cell: info => info.getValue(),
-    },
-    ...(verArchivados
-        ? [{
-            accessorKey: "deleted_at",
-            header: "Devolución Real",
-            cell: ({ row }: { row: { original: Prestamo } }) => {
-                const fecha = row.original.deleted_at;
-                return fecha ? new Date(fecha).toLocaleString() : "—";
-            },
-        }]
-        : [{
-            header: "Acciones",
-            cell: ({ row }: { row: { original: Prestamo } }) => {
-                const prestamo = row.original;
-                return (
-                    <div className="flex gap-2">
-                        {esPrestamoConFechaPasada(prestamo.fecha_devolucion) ? (
-                            <span className="text-gray-400 italic">No editable</span>
-                            ) : (
+        { accessorKey: "id", header: "ID" },
+        { accessorKey: "fecha_prestamo", header: "Fecha Préstamo",cell: ({ row }) => formatDateTime(row.original.fecha_prestamo) },
+        { accessorKey: "fecha_devolucion", header: "Fecha Devolución" ,cell: ({ row }) => formatDateTime(row.original.fecha_devolucion)},
+        {
+            header: "Estudiante",
+            accessorFn: row =>
+                row.estudiante
+                    ? `${row.estudiante.nombre} ${row.estudiante.apellido} (${row.estudiante.numero_control})`
+                    : "Sin datos",
+            cell: info => info.getValue(),
+        },
+        {
+            header: "Maestro",
+            accessorFn: row =>
+                row.maestro
+                    ? `${row.maestro.nombre} ${row.maestro.apellido} (${row.maestro.rfc})`
+                    : "Sin datos",
+            cell: info => info.getValue(),
+        },
+        {
+            header: "Materiales",
+            accessorFn: row =>
+                row.materiales_detalle && row.materiales_detalle.length > 0
+                    ? row.materiales_detalle.map(e => `${e.material?.nombre} (${e.material?.codigo})`).join(", ")
+                    : "Sin datos",
+            cell: info => info.getValue(),
+        },
+        {
+            header: "Encargado",
+            accessorFn: row =>
+                row.encargado
+                    ? `${row.encargado.id}: ${row.encargado.nombre} ${row.encargado.apellido}`
+                    : "Sin datos",
+            cell: info => info.getValue(),
+        },
+        {
+            header: "Materia",
+            accessorFn: row =>
+                row.materia
+                    ? `${row.materia.nombre}`
+                    : "Sin datos",
+            cell: info => info.getValue(),
+        },
+        { accessorKey: "practica", header: "Práctica" },
+        {
+            header: "Laboratorio",
+            accessorFn: row =>
+                row.laboratorio
+                    ? `${row.laboratorio.nombre}`
+                    : "Sin datos",
+            cell: info => info.getValue(),
+        },
+        ...(verArchivados
+            ? [{
+                accessorKey: "deleted_at",
+                header: "Devolución Real",
+                cell: ({ row }: { row: { original: Prestamo } }) => {
+                    const fecha = row.original.deleted_at;
+                    return fecha ? new Date(fecha).toLocaleString() : "—";
+                },
+            }]
+            : [{
+                header: "Acciones",
+                cell: ({ row }: { row: { original: Prestamo } }) => {
+                    const prestamo = row.original;
+                    return (
+                        <div className="flex gap-2">
+                            {esPrestamoConFechaPasada(prestamo.fecha_devolucion) ? (
+                                <span className="text-gray-400 italic">No editable</span>
+                                ) : (
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                                    onClick={() => handleEdit(prestamo)}
+                                >
+                                    Editar
+                                </button>
+                            )}
                             <button
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
-                                onClick={() => handleEdit(prestamo)}
+                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                                onClick={() => handleDelete(prestamo.id)}
                             >
-                                Editar
+                                Finalizar préstamo
                             </button>
-		                )}
-                        <button
-                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
-                            onClick={() => handleDelete(prestamo.id)}
-                        >
-                            Finalizar préstamo
-                        </button>
-                    </div>
-                );
-            }
-        }]
-    ),
-];
-
-
+                        </div>
+                    );
+                }
+            }]
+        ),
+    ];
     const fields = [
-        
         { name: "fecha_devolucion", label: "Fecha devolucion", type: "datetime-local", placeholder: "Ingrese la fecha de devolucion",required: true,defaultValue: getDefaultFechaDevolucion(),},
         { name: "numero_control", label: "Numero de control", type: "text", placeholder: "Ingrese el ID del alumno",required: true,minLength: 9, maxLength: 9,list: "lista-alumnos",
             title: "El numero de control debe ser de 9 numeros" },
         { name: "practica", label: "Práctica", type: "text", placeholder: "Ingrese el nombre de la práctica",maxLength: 50,required: true,pattern: "^[A-Za-z0-9áéíóúÁÉÍÓÚñÑ\\s]+$"},
         { name: "id_materia", label: "Materia", type: "select", required: true,
-            options: materias.map(ma => ({
+            options: materias.map((ma: { id: any; nombre: any; }) => ({
                 value: ma.id,
                 label: `${ma.id} (${ma.nombre})`
                 }))
-                
         },
         { name: "rfc", label: "Maestro", type: "select", required: true,
-            options: maestros.map(m => ({
+            options: maestros.map((m: { rfc: any; nombre: any; apellido: any; }) => ({
                 value: m.rfc,
                 label: `${m.rfc} (${m.nombre} ${m.apellido})`
-                }))
-                
+                }))        
         },
         { name: "id_laboratorio", label: "Laboratorio", type: "select", required: true,
-            options: laboratorios.map(l => ({
+            options: laboratorios.map((l: { id: any; nombre: any; }) => ({
                 value: l.id,
                 label: `${l.id} (${l.nombre})`
                 }))
-                
         },
         { name: "materiales", label: "Código(s) de materiales", type: "custom", placeholder: "Ej. OSC-ELE-001", minLength: 0, maxLength: 0, required: true},
-
     ];
-
-    if (loading) return (
+    if (isLoading) return (
         <div className="text-center">
             <div role="status">
                 <svg aria-hidden="true" className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -5,17 +5,14 @@ import Sidebar from "../../components/Sidebar";
 import { ColumnDef } from "@tanstack/react-table";
 import { Material } from "../../types";
 import { ModalExportar } from "../../components/Exportar";
-import useFetchMateriales from "./hooks/useFetchMateriales";
+import {useMaterials} from "./hooks/useMateriales";
 import { useMaterialesHandlers } from "./hooks/useMaterialesHandlers";
-
 const ViewMateriales: React.FC = () => {
     const [verArchivados, setVerArchivados] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-
-    const { data, setData, loading } = useFetchMateriales(verArchivados);
-
+    const { data = [], isLoading } = useMaterials(verArchivados);
     const {
     handleEdit,
     handleDelete,
@@ -26,36 +23,33 @@ const ViewMateriales: React.FC = () => {
     ubicaciones,
     laboratorios,
     handleExportMateriales
-    } = useMaterialesHandlers({
-        data,
-        setData,
-        setIsModalOpen,
-        setEditingMaterial,
-        editingMaterial,
-    });
-
+    } = useMaterialesHandlers(
+    setIsModalOpen,
+    setEditingMaterial,
+    editingMaterial
+    );
     const columns: ColumnDef<Material>[] = [
         { accessorKey: "id", header: "ID" },
         { accessorKey: "codigo", header: "Código" },
         { accessorKey: "nombre", header: "Nombre" },
         { accessorKey: "cantidad", header: "Cantidad" },
         {
-        header: "Marca",
-        accessorFn: (row) => row.marca?.nombre || "Sin marca"
+            header: "Marca",
+            accessorFn: (row) => row.marca?.nombre || "Sin marca"
         },
         { accessorKey: "modelo", header: "Modelo" },
         {
-        header: "Categoría",
-        accessorFn: (row) => row.categoria?.nombre || "Sin categoría"
+            header: "Categoría",
+            accessorFn: (row) => row.categoria?.nombre || "Sin categoría"
         },
         {
-        header: "Ubicación",
-        accessorFn: (row) => row.ubicacion?.nombre || "Sin ubicación"
+            header: "Ubicación",
+            accessorFn: (row) => row.ubicacion?.nombre || "Sin ubicación"
         },
         { accessorKey: "observaciones", header: "Comentarios" },
         {
-        header: "Laboratorio",
-        accessorFn: (row) => row.laboratorio?.nombre || "Sin datos"
+            header: "Laboratorio",
+            accessorFn: (row) => row.laboratorio?.nombre || "Sin datos"
         },
         {
             header: "Acciones",
@@ -87,7 +81,6 @@ const ViewMateriales: React.FC = () => {
             }
         }
     ];
-
     const fields = [
         { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del material",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
         { name: "cantidad", label: "Cantidad", type: "number", placeholder: "Ingrese la cantidad",required: true,min: 1, max: 200 },
@@ -99,7 +92,6 @@ const ViewMateriales: React.FC = () => {
                 })),
         },
         {name: "modelo", label: "Modelo", type: "text", placeholder: "Ingrese el modelo del material",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s\\-_]*$"},
-
         {name: "id_categoria",label: "Categoría",type: "select",required: true,
             options: categorias.map(c => ({
                 value: c.id,
@@ -119,9 +111,7 @@ const ViewMateriales: React.FC = () => {
                 }))
         },
     ]
-
-
-    if (loading) {
+    if (isLoading) {
         return (
         <div className="text-center">
             <div role="status">
@@ -135,66 +125,61 @@ const ViewMateriales: React.FC = () => {
         </div>
         );
     }
-
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
-        <Sidebar />
-        <div className="p-4 flex-1 bg-white dark:bg-gray-800">
-            <div className="flex justify-between items-center mb-4">
-                    <div className="flex gap-2">
-                        <button
-                            className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
-                            onClick={() => setVerArchivados(!verArchivados)}
-                        >
-                            {verArchivados ? "Ver Materiales" : "Ver Archivados"}
-                        </button>
-                        <button
-                            onClick={() => setIsExportModalOpen(true)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-                        >
-                            Exportar
-                        </button>
-                    </div>
-                    <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                        {verArchivados ? "Materiales Archivados" : "Materiales Activos"}
-                    </div>
+            <Sidebar />
+            <div className="p-4 flex-1 bg-white dark:bg-gray-800">
+                <div className="flex justify-between items-center mb-4">
+                        <div className="flex gap-2">
+                            <button
+                                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
+                                onClick={() => setVerArchivados(!verArchivados)}
+                            >
+                                {verArchivados ? "Ver Materiales" : "Ver Archivados"}
+                            </button>
+                            <button
+                                onClick={() => setIsExportModalOpen(true)}
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
+                            >
+                                Exportar
+                            </button>
+                        </div>
+                        <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
+                            {verArchivados ? "Materiales Archivados" : "Materiales Activos"}
+                        </div>
+                </div>
+                <Table
+                    data={data}
+                    columns={columns}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRestore={handleRestore}
+                    showArchived={verArchivados}
+                    onAdd={() => {
+                        setEditingMaterial(null);
+                        setIsModalOpen(true);
+                    }}
+                />
+                {verArchivados && data.length === 0 && (
+                    <p className="text-center text-gray-500 mt-4">No hay materiales archivados.</p>
+                )}
+                <ModalForm
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleSubmit}
+                    initialData={editingMaterial}
+                    fields={fields}
+                />
+                <ModalExportar
+                    key={isExportModalOpen ? "open" : "closed"} 
+                    isOpen={isExportModalOpen}
+                    onClose={() => setIsExportModalOpen(false)}
+                    onExport={handleExportMateriales}
+                    mostrarFechas={false}
+                    recurso="materiales"
+                    laboratorios={laboratorios}
+                />
             </div>
-
-            <Table
-            data={data}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onRestore={handleRestore}
-            showArchived={verArchivados}
-            onAdd={() => {
-                setEditingMaterial(null);
-                setIsModalOpen(true);
-            }}
-            />
-
-            {verArchivados && data.length === 0 && (
-            <p className="text-center text-gray-500 mt-4">No hay materiales archivados.</p>
-            )}
-
-            <ModalForm
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleSubmit}
-            initialData={editingMaterial}
-            fields={fields}
-            />
-
-            <ModalExportar
-                key={isExportModalOpen ? "open" : "closed"} 
-                isOpen={isExportModalOpen}
-                onClose={() => setIsExportModalOpen(false)}
-                onExport={handleExportMateriales}
-                mostrarFechas={false}
-                recurso="materiales"
-                laboratorios={laboratorios}
-            />
-        </div>
         </div>
     );
 };

@@ -4,18 +4,13 @@ import ModalForm from "../../components/Ventana";
 import Sidebar from "../../components/Sidebar";
 import { ColumnDef } from "@tanstack/react-table";
 import { Laboratorio } from "../../types";
-
-
-import useFetchLaboratorios from "./hooks/useFetchLaboratorios";
+import { useLaboratorios } from "./hooks/useLaboratorios";
 import { useLaboratoriosHandlers } from "./hooks/useLaboratoriosHandlers";
-
 const ViewLaboratorios: React.FC = () => {
     const [verArchivados, setVerArchivados] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingLaboratorio, setEditingLaboratorio] = useState<Laboratorio | null>(null);
-
-    const { data, setData, loading } = useFetchLaboratorios(verArchivados);
-
+    const { data = [], isLoading } = useLaboratorios(verArchivados);
     const {
         handleEdit,
         handleDelete,
@@ -23,12 +18,10 @@ const ViewLaboratorios: React.FC = () => {
         handleSubmit
     } = useLaboratoriosHandlers({
         data,
-        setData,
         setIsModalOpen,
         setEditingLaboratorio,
         editingLaboratorio,
     });
-
     const columns: ColumnDef<Laboratorio>[] = [
         { accessorKey: "id", header: "ID" },
         { accessorKey: "nombre", header: "Nombre" },
@@ -62,15 +55,13 @@ const ViewLaboratorios: React.FC = () => {
         },
         },
     ];
-
     const fields = [
         { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del laboratorio", maxLength: 30, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9\\s]+$",
             autoFocus: true
         },
         
     ];
-
-    if (loading) {
+    if (isLoading) {
         return (
         <div className="text-center">
             <div role="status">
@@ -84,48 +75,44 @@ const ViewLaboratorios: React.FC = () => {
         </div>
         );
     }
-
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
-        <Sidebar />
-        <div className="p-4 flex-1 bg-white dark:bg-gray-800">
-            <div className="flex justify-between items-center mb-4">
-            <button
-                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
-                onClick={() => setVerArchivados(!verArchivados)}
-            >
-                {verArchivados ? "Ver Activos" : "Ver Archivados"}
-            </button>
-                <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                    {verArchivados ? "Laboratorios Archivados" : "Laboratorios Activos"}
+            <Sidebar />
+            <div className="p-4 flex-1 bg-white dark:bg-gray-800">
+                <div className="flex justify-between items-center mb-4">
+                    <button
+                        className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
+                        onClick={() => setVerArchivados(!verArchivados)}
+                    >
+                        {verArchivados ? "Ver Activos" : "Ver Archivados"}
+                    </button>
+                    <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
+                        {verArchivados ? "Laboratorios Archivados" : "Laboratorios Activos"}
+                    </div>
                 </div>
+                <Table
+                    data={data}
+                    columns={columns}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRestore={handleRestore}
+                    showArchived={verArchivados}
+                    onAdd={() => {
+                        setEditingLaboratorio(null);
+                        setIsModalOpen(true);
+                    }}
+                />
+                {verArchivados && data.length === 0 && (
+                <p className="text-center text-gray-500 mt-4">No hay laboratorios archivadas.</p>
+                )}
+                <ModalForm
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleSubmit}
+                    initialData={editingLaboratorio}
+                    fields={fields}
+                />
             </div>
-
-            <Table
-            data={data}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onRestore={handleRestore}
-            showArchived={verArchivados}
-            onAdd={() => {
-                setEditingLaboratorio(null);
-                setIsModalOpen(true);
-            }}
-            />
-
-            {verArchivados && data.length === 0 && (
-            <p className="text-center text-gray-500 mt-4">No hay laboratorios archivadas.</p>
-            )}
-
-            <ModalForm
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleSubmit}
-            initialData={editingLaboratorio}
-            fields={fields}
-            />
-        </div>
         </div>
     );
 };

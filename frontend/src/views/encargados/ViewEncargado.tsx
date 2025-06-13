@@ -4,18 +4,13 @@ import ModalForm from "../../components/Ventana";
 import Sidebar from "../../components/Sidebar";
 import { ColumnDef } from "@tanstack/react-table";
 import { Encargado } from "../../types";
-
-
-import useFetchEncargados from "./hooks/useFetchEncargados";
+import { useEncargados } from "./hooks/useEncargados";
 import { useEncargadosHandlers } from "./hooks/useEncargadosHandlers";
-
 const ViewEncargados: React.FC = () => {
     const [verArchivados, setVerArchivados] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEncargado, setEditingEncargado] = useState<Encargado | null>(null);
-
-    const { data, setData, loading } = useFetchEncargados(verArchivados);
-
+    const { data = [], isLoading } = useEncargados(verArchivados);
     const {
         handleEdit,
         handleDelete,
@@ -23,12 +18,10 @@ const ViewEncargados: React.FC = () => {
         handleSubmit
     } = useEncargadosHandlers({
         data,
-        setData,
         setIsModalOpen,
         setEditingEncargado,
         editingEncargado,
     });
-
     const columns: ColumnDef<Encargado>[] = [
         { accessorKey: "id", header: "ID" },
         { accessorKey: "email", header: "Email" },
@@ -69,17 +62,15 @@ const ViewEncargados: React.FC = () => {
             }
         }
     ];
-
     const fields = [
-    { name: "email", label: "Correo", type: "text", placeholder: "Ingrese el Correo", minLength: 10,required: true,autoFocus: true},
-    { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del encargado",minLength: 3,maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
-    { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",minLength: 3,maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
-    { name: "password", label: "Contraseña", type: "password", placeholder: "Ingrese la contraseña",minLength: 8,maxLength: 12,pattern:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
-        title: "Debe contener minimo 8 caracteres, al menos una minúscula, mayúscula y un número"  },
-    { name: "is_admin", type: "hidden", value: false }
+        { name: "email", label: "Correo", type: "text", placeholder: "Ingrese el Correo", minLength: 10,required: true,autoFocus: true},
+        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del encargado",minLength: 3,maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
+        { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",minLength: 3,maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
+        { name: "password", label: "Contraseña", type: "password", placeholder: "Ingrese la contraseña",minLength: 8,maxLength: 12,pattern:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+            title: "Debe contener minimo 8 caracteres, al menos una minúscula, mayúscula y un número"  },
+        { name: "is_admin", type: "hidden", value: false }
     ];
-
-    if (loading) {
+    if (isLoading) {
         return (
         <div className="text-center">
             <div role="status">
@@ -93,48 +84,44 @@ const ViewEncargados: React.FC = () => {
         </div>
         );
     }
-
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
-        <Sidebar />
-        <div className="p-4 flex-1 bg-white dark:bg-gray-800">
-            <div className="flex justify-between items-center mb-4">
-            <button
-                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
-                onClick={() => setVerArchivados(!verArchivados)}
-            >
-                {verArchivados ? "Ver Activos" : "Ver Archivados"}
-            </button>
-                <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                    {verArchivados ? "Encargados Archivados" : "Encargados Activos"}
+            <Sidebar />
+            <div className="p-4 flex-1 bg-white dark:bg-gray-800">
+                <div className="flex justify-between items-center mb-4">
+                    <button
+                        className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
+                        onClick={() => setVerArchivados(!verArchivados)}
+                    >
+                        {verArchivados ? "Ver Activos" : "Ver Archivados"}
+                    </button>
+                    <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
+                        {verArchivados ? "Encargados Archivados" : "Encargados Activos"}
+                    </div>
                 </div>
+                <Table
+                    data={data}
+                    columns={columns}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRestore={handleRestore}
+                    showArchived={verArchivados}
+                    onAdd={() => {
+                        setEditingEncargado(null);
+                        setIsModalOpen(true);
+                    }}
+                />
+                {verArchivados && data.length === 0 && (
+                <p className="text-center text-gray-500 mt-4">No hay encargados archivados.</p>
+                )}
+                <ModalForm
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleSubmit}
+                    initialData={editingEncargado}
+                    fields={fields}
+                />
             </div>
-
-            <Table
-            data={data}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onRestore={handleRestore}
-            showArchived={verArchivados}
-            onAdd={() => {
-                setEditingEncargado(null);
-                setIsModalOpen(true);
-            }}
-            />
-
-            {verArchivados && data.length === 0 && (
-            <p className="text-center text-gray-500 mt-4">No hay encargados archivados.</p>
-            )}
-
-            <ModalForm
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleSubmit}
-            initialData={editingEncargado}
-            fields={fields}
-            />
-        </div>
         </div>
     );
 };

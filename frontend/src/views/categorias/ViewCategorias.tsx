@@ -4,18 +4,13 @@ import ModalForm from "../../components/Ventana";
 import Sidebar from "../../components/Sidebar";
 import { ColumnDef } from "@tanstack/react-table";
 import { Categoria } from "../../types";
-
-
-import useFetchCategorias from "./hooks/useFetchCategorias";
+import { useCategorias } from "./hooks/useCategorias";
 import { useCategoriasHandlers } from "./hooks/useCategoriasHandlers";
-
 const ViewCategorias: React.FC = () => {
     const [verArchivados, setVerArchivados] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCategoria, setEditingCategoria] = useState<Categoria | null>(null);
-
-    const { data, setData, loading } = useFetchCategorias(verArchivados);
-
+    const { data = [], isLoading } = useCategorias(verArchivados);
     const {
         handleEdit,
         handleDelete,
@@ -23,55 +18,50 @@ const ViewCategorias: React.FC = () => {
         handleSubmit
     } = useCategoriasHandlers({
         data,
-        setData,
         setIsModalOpen,
         setEditingCategoria,
         editingCategoria,
     });
-
-    
     const columns: ColumnDef<Categoria>[] = [
         { accessorKey: "id", header: "ID" },
         { accessorKey: "nombre", header: "Nombre" },
         {
         header: "Acciones",
-        cell: ({ row }) => {
-            const categoria = row.original;
-            return verArchivados ? (
-            <button
-                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
-                onClick={() => handleRestore(categoria.id)}
-            >
-                Restaurar
-            </button>
-            ) : (
-            <div className="flex gap-2">
+            cell: ({ row }) => {
+                const categoria = row.original;
+                return verArchivados ? (
                 <button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
-                onClick={() => handleEdit(categoria)}
+                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                    onClick={() => handleRestore(categoria.id)}
                 >
-                Editar
+                    Restaurar
                 </button>
-                <button
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md cursor-pointer"
-                onClick={() => handleDelete(categoria.id)}
-                >
-                Archivar
-                </button>
-            </div>
-            );
-        },
+                ) : (
+                <div className="flex gap-2">
+                    <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                        onClick={() => handleEdit(categoria)}
+                    >
+                        Editar
+                    </button>
+                    <button
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md cursor-pointer"
+                        onClick={() => handleDelete(categoria.id)}
+                    >
+                        Archivar
+                    </button>
+                </div>
+                );
+            },
         },
     ];
-
     const fields = [
-        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre de la marca", maxLength: 30, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9\\s]+$",
+        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre de la categoría", maxLength: 30, required: true, pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9\\s]+$",
             autoFocus: true
         },
         
     ];
-
-    if (loading) {
+    if (isLoading) {
         return (
         <div className="text-center">
             <div role="status">
@@ -85,8 +75,6 @@ const ViewCategorias: React.FC = () => {
         </div>
         );
     }
-    
-    
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
             <Sidebar />
@@ -102,30 +90,27 @@ const ViewCategorias: React.FC = () => {
                         {verArchivados ? "Categorías Archivadas" :"Categorías Activas" }
                     </div>
                 </div>
-
                 <Table
-                data={data}
-                columns={columns}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onRestore={handleRestore}
-                showArchived={verArchivados}
-                onAdd={() => {
-                    setEditingCategoria(null);
-                    setIsModalOpen(true);
-                }}
+                    data={data}
+                    columns={columns}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRestore={handleRestore}
+                    showArchived={verArchivados}
+                    onAdd={() => {
+                        setEditingCategoria(null);
+                        setIsModalOpen(true);
+                    }}
                 />
-
                 {verArchivados && data.length === 0 && (
-                <p className="text-center text-gray-500 mt-4">No hay categorías archivadas.</p>
+                    <p className="text-center text-gray-500 mt-4">No hay categorías archivadas.</p>
                 )}
-
                 <ModalForm
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSubmit={handleSubmit}
-                initialData={editingCategoria}
-                fields={fields}
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleSubmit}
+                    initialData={editingCategoria}
+                    fields={fields}
                 />
             </div>
         </div>

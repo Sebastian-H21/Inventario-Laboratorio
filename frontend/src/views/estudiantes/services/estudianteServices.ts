@@ -1,6 +1,5 @@
 import api from "../../../utils/api";
 import { Estudiante } from "../../../types";
-
 export const deleteEstudiante = async (id: number) => {
     try {
         const response = await api.delete(`/estudiantes/${id}`);

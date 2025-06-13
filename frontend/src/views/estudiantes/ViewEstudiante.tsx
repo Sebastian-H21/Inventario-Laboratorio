@@ -4,18 +4,15 @@ import ModalForm from "../../components/Ventana";
 import Sidebar from "../../components/Sidebar";
 import { ColumnDef } from "@tanstack/react-table";
 import { Estudiante } from "../../types";
-import useFetchEstudiantes from "./hooks/useFetchEstudiantes";
+import {useEstudiantes} from "./hooks/useEstudiantes";
 import { useEstudiantesHandlers } from "./hooks/useEstudiantesHandlers";
 import { ModalExportar } from "../../components/Exportar";
-
 const ViewEstudiantes: React.FC = () => {
     const [verArchivados, setVerArchivados] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEstudiante, setEditingEstudiante] = useState<Estudiante | null>(null);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-
-    const { data, setData, loading } = useFetchEstudiantes(verArchivados);
-
+    const { data= [], isLoading } = useEstudiantes(verArchivados);
         const {
             handleEdit,
             handleDelete,
@@ -24,13 +21,11 @@ const ViewEstudiantes: React.FC = () => {
             handleExportEstudiantes
         } = useEstudiantesHandlers({
             data,
-            setData,
             setIsModalOpen,
             setEditingEstudiante,
             editingEstudiante,
         });
-
-        const columns: ColumnDef<Estudiante>[] = [
+    const columns: ColumnDef<Estudiante>[] = [
         { accessorKey: "id", header: "ID" },
         { accessorKey: "numero_control", header: "Numero control" },
         { accessorKey: "nombre", header: "Nombre" },
@@ -68,8 +63,6 @@ const ViewEstudiantes: React.FC = () => {
             }
         }
     ];
-
-
     const fields = [
         { name: "numero_control", label: "Numero de control", type: "text", placeholder: "Ingrese el NC", minLength: 9, maxLength: 9,required: true, pattern: "^[0-9]{9}$",
             title: "El numero de control debe ser de 9 numeros" },
@@ -105,9 +98,7 @@ const ViewEstudiantes: React.FC = () => {
             { value: "Otra", label: "Otra" },
         ],required: true },
     ];
-
-
-    if (loading) {
+    if (isLoading) {
         return (
         <div className="text-center">
             <div role="status">
@@ -121,65 +112,60 @@ const ViewEstudiantes: React.FC = () => {
         </div>
         );
     }
-
-
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-gray-800">
-        <Sidebar />
-        <div className="p-4 flex-1 bg-white dark:bg-gray-800">
-            <div className="flex justify-between items-center mb-4">
-                    <div className="flex gap-2">
-                        <button
-                            className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
-                            onClick={() => setVerArchivados(!verArchivados)}
-                        >
-                            {verArchivados ? "Ver Estudiantes" : "Ver Archivados"}
-                        </button>
-                        <button
-                            onClick={() => setIsExportModalOpen(true)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-                        >
-                            Exportar
-                        </button>
-                    </div>
-                    <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
-                        {verArchivados ?  "Estudiantes Archivados" : "Estudiantes Activos"}
-                    </div>
+            <Sidebar />
+            <div className="p-4 flex-1 bg-white dark:bg-gray-800">
+                <div className="flex justify-between items-center mb-4">
+                        <div className="flex gap-2">
+                            <button
+                                className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 cursor-pointer"
+                                onClick={() => setVerArchivados(!verArchivados)}
+                            >
+                                {verArchivados ? "Ver Estudiantes" : "Ver Archivados"}
+                            </button>
+                            <button
+                                onClick={() => setIsExportModalOpen(true)}
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
+                            >
+                                Exportar
+                            </button>
+                        </div>
+                        <div className="flex-1 text-center font-bold text-black dark:text-white text-3xl">
+                            {verArchivados ?  "Estudiantes Archivados" : "Estudiantes Activos"}
+                        </div>
+                </div>
+                <Table
+                    data={data}
+                    columns={columns}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRestore={handleRestore}
+                    showArchived={verArchivados}
+                    onAdd={() => {
+                        setEditingEstudiante(null);
+                        setIsModalOpen(true);
+                    }}
+                />
+                {verArchivados && data.length === 0 && (
+                    <p className="text-center text-gray-500 mt-4">No hay estudiantes archivados.</p>
+                )}
+                <ModalForm
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleSubmit}
+                    initialData={editingEstudiante}
+                    fields={fields}
+                />
+                <ModalExportar
+                    key={isExportModalOpen ? "open" : "closed"} 
+                    isOpen={isExportModalOpen}
+                    onClose={() => setIsExportModalOpen(false)}
+                    onExport={handleExportEstudiantes}
+                    mostrarFechas={false}
+                    recurso="estudiantes"
+                />            
             </div>
-            <Table
-            data={data}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onRestore={handleRestore}
-            showArchived={verArchivados}
-            onAdd={() => {
-                setEditingEstudiante(null);
-                setIsModalOpen(true);
-            }}
-            />
-
-            {verArchivados && data.length === 0 && (
-            <p className="text-center text-gray-500 mt-4">No hay estudiantes archivados.</p>
-            )}
-
-            <ModalForm
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleSubmit}
-            initialData={editingEstudiante}
-            fields={fields}
-            />
-
-            <ModalExportar
-            key={isExportModalOpen ? "open" : "closed"} 
-            isOpen={isExportModalOpen}
-            onClose={() => setIsExportModalOpen(false)}
-            onExport={handleExportEstudiantes}
-            mostrarFechas={false}
-            recurso="estudiantes"
-            />            
-        </div>
         </div>
     );
 };
