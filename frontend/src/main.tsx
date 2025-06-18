@@ -15,7 +15,7 @@ createRoot(document.getElementById("root")!).render(
 
 // 5. Firma
 console.log(
-  `%c💻 Sistema desarrollado por T.S.H.M. – https://github.com/Sebastian-H21`,
+  `%c💻 Sistema desarrollado por T.S.H.M.`,
   "color: #4f46e5; font-size: 14px; font-weight: bold;"
 );
 console.log(
