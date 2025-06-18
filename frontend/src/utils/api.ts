@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://tudominio.com/inventario/backend/public/api',
+  baseURL: 'https://dominio.com/inventario/backend/public/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
