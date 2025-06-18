@@ -6,23 +6,23 @@ import { generarCodigoMaterial } from "../utils/generarCodigoMaterial";
 interface ModalFormProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: Record<string, any>) => void;
+    onSubmit: (data: Record<string, any>) => void | Promise<void>;
     initialData?: Record<string, any> | null;
     fields: {
         name: string;
-        label: string;
+        label?: string;
         type: string;
-        placeholder: string;
-        minLength: number;
-        maxLength: number;
+        placeholder?: string;
+        minLength?: number;
+        maxLength?: number;
         required?: boolean;
         pattern?: string;
         options?: { value: string; label: string }[];
-        min?: number; 
+        min?: number;
         max?: number;
         title?: string;
         autoFocus?: boolean;
-        defaultValue: string;
+        defaultValue?: string;
     }[];
 }
     const ModalForm: React.FC<ModalFormProps> = ({

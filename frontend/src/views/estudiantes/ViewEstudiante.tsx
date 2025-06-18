@@ -66,8 +66,8 @@ const ViewEstudiantes: React.FC = () => {
     const fields = [
         { name: "numero_control", label: "Numero de control", type: "text", placeholder: "Ingrese el NC", minLength: 9, maxLength: 9,required: true, pattern: "^[0-9]{9}$",
             title: "El numero de control debe ser de 9 numeros" },
-        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del estudiante",maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
-        { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
+        { name: "nombre", label: "Nombre", type: "text", placeholder: "Ingrese el nombre del estudiante",minLength:3,maxLength: 30,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$"},
+        { name: "apellido", label: "Apellido", type: "text", placeholder: "Ingrese los apellidos",minLength:3,maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ\\s]+$" },
         { name: "carrera", label: "Carrera", type: "select", placeholder: "Ingrese la carrera",options: [
             { value: "Mecatronica", label: "Ingeniería en Mecatronica" },
             { value: "Industrial", label: "Ingeniería Industrial" },
@@ -83,7 +83,7 @@ const ViewEstudiantes: React.FC = () => {
             { value: "2", label: "2do Semestre" },
             { value: "3", label: "3er Semestre" },
             { value: "4", label: "4to Semestre" },
-            { value: "5", label: "5to Semestre" },
+            { value: "5", label: "5to Semestre" }, 
             { value: "6", label: "6to Semestre" },
             { value: "7", label: "7mo Semestre" },
             { value: "8", label: "8vo Semestre" },
@@ -153,7 +153,7 @@ const ViewEstudiantes: React.FC = () => {
                 <ModalForm
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit as unknown as (data: Record<string, any>) => void}
                     initialData={editingEstudiante}
                     fields={fields}
                 />
@@ -164,6 +164,7 @@ const ViewEstudiantes: React.FC = () => {
                     onExport={handleExportEstudiantes}
                     mostrarFechas={false}
                     recurso="estudiantes"
+                    laboratorios={[]} 
                 />            
             </div>
         </div>

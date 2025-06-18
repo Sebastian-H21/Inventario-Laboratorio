@@ -91,25 +91,31 @@ interface Params {
             toast.error(error?.response?.data?.message || "Ocurrió un error inesperado.");
         }
     };
-    const handleExportMaestros = async ({ tipo }: { tipo: "activos" | "completados" }) => {
+    const handleExportMaestros = async ({
+        tipo,
+        }: {
+        tipo: "activos" | "completados";
+        }) => {
         try {
-        const { data } = await api.get("/maestros", {
+            const { data } = await api.get("/maestros", {
             params: { verArchivados: tipo === "completados" },
-        });
-        if (!data.length) {
+            });
+            if (!data.length) {
             toast.info("No se encontraron maestros para exportar.");
             return;
-        }
-        const xlsData = formatMaestrosForXLS(data);
-        const fecha = new Date().toLocaleDateString("es-MX").replace(/\//g, "-");
-        const nombreArchivo = `maestros_${tipo}_${fecha}.xlsx`;
-        exportToExcel(xlsData, nombreArchivo);
-        toast.success("Exportación realizada con éxito.");
+            }
+            const xlsData = formatMaestrosForXLS(data);
+            const fecha = new Date().toLocaleDateString("es-MX").replace(/\//g, "-");
+            const tipoNombre = tipo === "completados" ? "archivados" : "activos";
+            const nombreArchivo = `maestros_${tipoNombre}_${fecha}.xlsx`;
+            exportToExcel(xlsData, nombreArchivo);
+            toast.success("Exportación realizada con éxito.");
         } catch (error) {
             console.error("Error al exportar maestros:", error);
             toast.error("Ocurrió un error al exportar.");
         }
     };
+
     return {
         handleEdit,
         handleDelete,

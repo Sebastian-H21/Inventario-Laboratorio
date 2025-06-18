@@ -108,7 +108,7 @@ const ViewLaboratorios: React.FC = () => {
                 <ModalForm
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit as unknown as (data: Record<string, any>) => void}
                     initialData={editingLaboratorio}
                     fields={fields}
                 />

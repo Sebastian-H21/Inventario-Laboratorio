@@ -121,18 +121,18 @@ const ViewMaestros: React.FC = () => {
                 <ModalForm
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit as unknown as (data: Record<string, any>) => void}
                     initialData={editingMaestro}
                     fields={fields}
                 />
                 <ModalExportar
-                    key={isExportModalOpen ? "open" : "closed"} 
+                    key={isExportModalOpen ? "open" : "closed"}
                     isOpen={isExportModalOpen}
                     onClose={() => setIsExportModalOpen(false)}
                     onExport={handleExportMaestros}
                     mostrarFechas={false}
-                    recurso="Maestros"
-                    //laboratorios={" "}
+                    recurso="Maestros" 
+                    laboratorios={[]}   
                 />                
             </div>
         </div>

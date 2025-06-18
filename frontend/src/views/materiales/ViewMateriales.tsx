@@ -87,26 +87,26 @@ const ViewMateriales: React.FC = () => {
         { name: "observaciones", label: "Comentarios", type: "text", placeholder: "Comentario (opcional)",maxLength: 50,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s]*$"},
         {name: "id_marca",label: "Marca",type: "select",required: true,
             options: marcas.map(m => ({
-                value: m.id,
+                value: String(m.id),
                 label: `${m.id} (${m.nombre})`
                 })),
         },
         {name: "modelo", label: "Modelo", type: "text", placeholder: "Ingrese el modelo del material",maxLength: 50,required: true,pattern: "^[A-Za-záéíóúÁÉÍÓÚñÑ0-9.,\\s\\-_]*$"},
         {name: "id_categoria",label: "Categoría",type: "select",required: true,
             options: categorias.map(c => ({
-                value: c.id,
+                value:String( c.id),
                 label: `${c.id} (${c.nombre})`
                 }))
         },
         {name: "id_ubicacion",label: "Ubicacion",type: "select",required: true,
             options: ubicaciones.map(u => ({
-                value: u.id,
+                value: String(u.id),
                 label: `${u.id} (${u.nombre})`
                 }))
         },
         {name: "id_laboratorio",label: "Laboratorio",type: "select",required: true,
             options: laboratorios.map(l => ({
-                value: l.id,
+                value: String(l.id),
                 label: `${l.id} (${l.nombre})`
                 }))
         },
@@ -166,7 +166,7 @@ const ViewMateriales: React.FC = () => {
                 <ModalForm
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit as unknown as (data: Record<string, any>) => void}
                     initialData={editingMaterial}
                     fields={fields}
                 />

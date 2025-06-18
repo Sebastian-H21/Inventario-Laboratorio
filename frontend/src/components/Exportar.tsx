@@ -15,7 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
         fechaInicio?: Date;
         fechaFin?: Date;
         laboratorioId?: number;
-        modalidad?: string;
+        modalidad?: "Escolarizada" | "Mixta" | "Otra";
     }) => void;
     mostrarFechas?: boolean;
     recurso: string;
@@ -166,4 +166,4 @@ import "react-datepicker/dist/react-datepicker.css";
         </div>
         </div>
     );
-    };
+};

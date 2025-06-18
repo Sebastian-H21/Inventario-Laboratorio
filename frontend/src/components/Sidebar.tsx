@@ -40,21 +40,21 @@ const Sidebar = () => {
     };
 
     const Menus = [
-        { title: "Inicio", src: "home", path: "/inicio" },
-        { title: "Prestamos", src: "prestamo", path: "/prestamos"},
-        { title: "Materiales", src: "osc", path: "/materiales" },
-        { title: "Estudiantes", src: "estudiante", path: "/estudiantes", },
-        { title: "Maestros", src: "maestro", path: "/maestros" },
+        { title: "Inicio", src: "home", path: "/inicio", gap: false},
+        { title: "Prestamos", src: "prestamo", path: "/prestamos", gap: false},
+        { title: "Materiales", src: "osc", path: "/materiales", gap: false },
+        { title: "Estudiantes", src: "estudiante", path: "/estudiantes", gap: false },
+        { title: "Maestros", src: "maestro", path: "/maestros", gap: false},
         ...(isAdmin
-            ? [{ title: "Encargados", src: "user", path: "/encargados" }]
-            : [{ title: "Mi perfil", src: "user", path: "/perfil" }]
+            ? [{ title: "Encargados", src: "user", path: "/encargados" , gap: false}]
+            : [{ title: "Mi perfil", src: "user", path: "/perfil", gap: false }]
         ),
-        { title: "Materia", src: "materia", path: "/materias" },
-        { title: "Marca", src: "marca", path: "/marcas",  },
-        { title: "Categoría", src: "categoria", path: "/categorias" },
-        { title: "Ubicación", src: "ubicacion", path: "/ubicacion" },
-        { title: "Laboratorio", src: "labo", path: "/laboratorios" },
-        { title: "Cerrar sesión", src: "logout", path: "/", logout: true }
+        { title: "Materia", src: "materia", path: "/materias", gap: false },
+        { title: "Marca", src: "marca", path: "/marcas", gap: false },
+        { title: "Categoría", src: "categoria", path: "/categorias", gap: false },
+        { title: "Ubicación", src: "ubicacion", path: "/ubicacion", gap: false },
+        { title: "Laboratorio", src: "labo", path: "/laboratorios", gap: false },
+        { title: "Cerrar sesión", src: "logout", path: "/", logout: true, gap: false }
     ];
 
     return (
