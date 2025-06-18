@@ -58,10 +58,8 @@ public function store(Request $request)
         $codigo = $this->generarCodigoMaterial($laboratorio->nombre,$validatedData['nombre'], $numero);
         $validatedData['codigo'] = $codigo;
         $validatedData['observaciones'] = $validatedData['observaciones'] ?? 'Sin observaciones';
-
         $registro = \App\Models\Material::create($validatedData);
         $registro->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre', 'laboratorio:id,nombre');
-
         return response()->json([
             'message' => 'Registro guardado correctamente',
             'data' => $registro
@@ -78,7 +76,6 @@ public function store(Request $request)
         ], 500);
     }
 }
-
     public function update(Request $request, $id)
     {
         try {
@@ -92,35 +89,23 @@ public function store(Request $request)
                 'id_ubicacion' => 'required|exists:ubicacions,id',
                 'id_laboratorio' => 'required|exists:laboratorios,id',
             ]);
-
             $validatedData['observaciones'] = $validatedData['observaciones'] ?? 'Sin observaciones';
-
             $material = Material::findOrFail($id);
             $codigoOriginal = $material->codigo;
-
-            
             if ($validatedData['nombre'] !== $material->nombre) {
-                $laboratorio = $material->laboratorio; 
-                $ultimo = Material::withTrashed()
-                    ->where('id_laboratorio', $material->id_laboratorio)
-                    ->orderByDesc('id')
-                    ->first();
-
-                $numero = 1;
-                if ($ultimo && preg_match('/-(\d{3,})$/', $ultimo->codigo, $matches)) {
-                    $numero = intval($matches[1]) + 1;
+                $laboratorio = $material->laboratorio;
+                if (preg_match('/-(\d{4})$/', $codigoOriginal, $matches)) {
+                    $numero = intval($matches[1]);
+                } else {
+                    $numero = 1;
                 }
-
-                $codigoNuevo = $this->generarCodigoMaterial($validatedData['nombre'], $laboratorio->nombre, $numero);
+                $codigoNuevo = $this->generarCodigoMaterial($laboratorio->nombre, $validatedData['nombre'], $numero);
                 $validatedData['codigo'] = $codigoNuevo;
             } else {
-                $validatedData['codigo'] = $codigoOriginal; 
+                $validatedData['codigo'] = $codigoOriginal;
             }
-
             $material->update($validatedData);
-
             $material->load('marca:id,nombre', 'categoria:id,nombre', 'ubicacion:id,nombre', 'laboratorio:id,nombre');
-
             return response()->json([
                 'message' => 'Material actualizado correctamente',
                 'data' => $material
@@ -152,8 +137,6 @@ public function store(Request $request)
             ], 500);
         }
     }
-
-
     public function restaurar($id)
     {
         try {
@@ -172,30 +155,25 @@ public function store(Request $request)
             ], 500);
         }
     }
-
     public function obtenerUltimoNumero()
     {
         try {
             $ultimo = \App\Models\Material::withTrashed()
                 ->orderByDesc('id')
                 ->first();
-
             if (!$ultimo) {
                 return response()->json(['ultimoNumero' => 1]);
             }
-
             $matches = [];
             if (preg_match('/-(\d{4})$/', $ultimo->codigo, $matches)) {
                 $numero = intval($matches[1]) + 1;
                 return response()->json(['ultimoNumero' => $numero]);
             }
-
             return response()->json(['ultimoNumero' => 1]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al obtener el último número'], 500);
         }
     }
-
     public function obtenerUltimoNumeroPorLaboratorio($id_laboratorio)
     {
         try {
@@ -203,34 +181,27 @@ public function store(Request $request)
                 ->where('id_laboratorio', $id_laboratorio)
                 ->orderByDesc('id')
                 ->first();
-
             if (!$ultimo) {
                 return response()->json(['ultimoNumero' => 1]);
             }
-
             $matches = [];
             if (preg_match('/-(\d{4})$/', $ultimo->codigo, $matches)) {
                 $numero = intval($matches[1]) + 1;
                 return response()->json(['ultimoNumero' => $numero]);
             }
-
             return response()->json(['ultimoNumero' => 1]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al obtener el último número'], 500);
         }
     }
-
     private function generarCodigoMaterial($nombre, $nombreLab, $numero)
-{
-    $nombreCorto = collect(explode(' ', strtoupper(Str::ascii($nombre))))
-        ->take(2)
-        ->map(fn($p) => substr($p, 0, 3))
-        ->implode('');
-
-    $labCorto = substr(strtoupper(Str::ascii($nombreLab)), 0, 3);
-
-    $secuencia = str_pad($numero, 3, '0', STR_PAD_LEFT);
-    return "{$nombreCorto}-{$labCorto}-{$secuencia}";
-}
-
+    {
+        $nombreCorto = collect(explode(' ', strtoupper(Str::ascii($nombre))))
+            ->take(2)
+            ->map(fn($p) => substr($p, 0, 3))
+            ->implode('');
+        $labCorto = substr(strtoupper(Str::ascii($nombreLab)), 0, 3);
+        $secuencia = str_pad($numero, 4, '0', STR_PAD_LEFT);
+        return "{$nombreCorto}-{$labCorto}-{$secuencia}";
+    }
 }
