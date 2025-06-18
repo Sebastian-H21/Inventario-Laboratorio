@@ -62,7 +62,7 @@ const AnimatedRoutes = () => {
 function App() {
     return (
         <>
-            <BrowserRouter>
+            <BrowserRouter basename="/inventario/frontend">
                 <AnimatedRoutes />
             </BrowserRouter>
             <ToastContainer />
