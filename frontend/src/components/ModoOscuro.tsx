@@ -31,7 +31,7 @@ const ModoOscuro = () => {
       onClick={handleToggleDarkMode}
       className="absolute top-4 right-4 p-2 z-50 cursor-pointer"
     >
-      <img src={`/src/assets/${themeIcon}.png`} alt="Toggle dark mode" />
+      <img src={`/Inventario/${themeIcon}.png`} alt="Toggle dark mode" />
     </button>
   );
 };

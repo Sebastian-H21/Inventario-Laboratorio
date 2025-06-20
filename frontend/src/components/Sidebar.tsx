@@ -62,7 +62,7 @@ const Sidebar = () => {
             <div className={`${open ? "w-72" : "w-20" } bg-white dark:bg-gray-900 h-screen p-5 pt-8 relative duration-300`}>
                 {/* Botón de Toggle (ícono menú) */}
                 <img
-                    src="./src/assets/menu.png"
+                    src="/Inventario/menu.png"
                     className={`absolute cursor-pointer -right-3 top-9 w-7 border-dark-purple 
                     border-2 rounded-full ${!open && "rotate-180"}`}
                     onClick={() => setOpen(!open)}
@@ -70,7 +70,7 @@ const Sidebar = () => {
                 {/* Logo */}
                 <div className="flex gap-x-4 items-center">
                     <img
-                        src="./src/assets/logo.png"
+                        src="/Inventario/logo.png"
                         className={`cursor-pointer duration-500`} // rotar logo itpa ${open && "rotate-[360deg]"}
                         onClick={() => setOpen(!open)}
                     />
@@ -90,7 +90,7 @@ const Sidebar = () => {
                                     onClick={handleLogout}
                                     className="flex w-full rounded-md p-2 text-sm items-center gap-x-4 cursor-pointer duration-200 text-black dark:text-white hover:bg-blue-300"
                                 >
-                                    <img src={`./src/assets/${Menu.src}.png`} alt={Menu.title} />
+                                    <img src={`/Inventario/${Menu.src}.png`} alt={Menu.title} />
                                     <span className={`${!open && "hidden"} origin-left duration-200`}>
                                         {Menu.title}
                                     </span>
@@ -103,7 +103,7 @@ const Sidebar = () => {
                                         ${isActive ? "bg-blue-500 text-white" : "text-black dark:text-white hover:bg-blue-300"}`
                                     }
                                 >
-                                    <img src={`./src/assets/${Menu.src}.png`} alt={Menu.title} />
+                                    <img src={`/Inventario/${Menu.src}.png`} alt={Menu.title} />
                                     <span className={`${!open && "hidden"} origin-left duration-200`}>
                                         {Menu.title}
                                     </span>
@@ -119,7 +119,7 @@ const Sidebar = () => {
                         className="flex items-center gap-x-4 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm text-black dark:text-white w-full"
                     >
                         <img
-                            src={`./src/assets/${fijarSidebar ? "candadoa" : "candadoc"}.png`}
+                            src={`/Inventario/${fijarSidebar ? "candadoa" : "candadoc"}.png`}
                             alt={fijarSidebar ? "Desbloquear Sidebar" : "Bloquear Sidebar"}
                             className="w-5 h-5"
                         />

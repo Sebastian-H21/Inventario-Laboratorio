@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 const images = [
-    { src: "./src/assets/it1.jpg", alt: "Logo1" },
-    { src: "./src/assets/it2.jpg", alt: "Logo2" },
-    { src: "./src/assets/it3.jpg", alt: "Logo3" },
+    { src: "it1.jpg", alt: "Logo1" },
+    { src: "it2.jpg", alt: "Logo2" },
+    { src: "it3.jpg", alt: "Logo3" },
 ];
 
 const Home = () => {
